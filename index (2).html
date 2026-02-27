@@ -46,7 +46,7 @@
     <!-- MAIN CONTENT -->
     <main class="content">
       <section class="card">
-        <h1 class="card__title">1. Hafta: HTML & CSS Sayfa İskeleti</h1>
+        <h1 class="card__title" id="weekTitle">1. Hafta: HTML & CSS Sayfa İskeleti</h1>
         <p class="card__text">
           Bu örnekte <strong>üst menü</strong>, <strong>yan menü</strong> ve ortada
           <strong>3x5 tablo</strong> bulunuyor. Öğrenciler için sınıfta "kutu modeli, padding,
@@ -59,13 +59,17 @@
           <span class="badge">Tablo</span>
           <span class="badge">Hover</span>
         </div>
+
+        <div class="card__actions">
+          <button id="btnText" class="btn">Başlığı Değiştir</button>
+        </div>
       </section>
 
       <section class="card">
         <h2 class="card__subtitle">Örnek Veri Tablosu (3 x 5)</h2>
 
         <div class="tableWrap">
-          <table class="dataTable">
+          <table class="dataTable gradeTable">
             <thead>
               <tr>
                 <th>#</th>
@@ -93,6 +97,18 @@
         <p class="muted">
           Not: Bu tablo 3 satır (öğrenci) ve 5 sütun içerir.
         </p>
+
+        <div class="card__actions">
+          <button class="btnSort btn">Vize'ye Göre Sırala</button>
+        </div>
+      </section>
+      <!-- ADDED: Görsel kartı -->
+      <section class="card">
+        <h2 class="card__subtitle">Görsel</h2>
+        <img class="mainImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwByxhq3cYT6CXSdOc5JnhtALS8S1XUPS6Zg&s" alt="Ders görseli" />
+        <div class="card__actions">
+          <button id="btnImg" class="btn">Görseli Değiştir</button>
+        </div>
       </section>
     </main>
   </div>
@@ -103,5 +119,56 @@
     <a class="footer__link" href="#">Gizlilik</a>
     <a class="footer__link" href="#">Yardım</a>
   </footer>
+
+  <script>
+    var title = document.getElementById("weekTitle");
+    var btnText = document.getElementById("btnText");
+    var original = true;
+
+    btnText.addEventListener("click", function () {
+      if (original) {
+        title.textContent = "1. Hafta: Sayfa İskeleti Tamamlandı!";
+      } else {
+        title.textContent = "1. Hafta: HTML & CSS Sayfa İskeleti";
+      }
+      original = !original;
+    });
+
+    var table = document.getElementsByClassName("gradeTable")[0];
+    var sortBtn = document.getElementsByClassName("btnSort")[0];
+    var ascending = true;
+
+    sortBtn.addEventListener("click", function () {
+      var tbody = table.querySelector("tbody");
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+
+      rows.sort(function (a, b) {
+        var valA = parseInt(a.cells[2].textContent);
+        var valB = parseInt(b.cells[2].textContent);
+        return ascending ? valA - valB : valB - valA;
+      });
+
+      rows.forEach(function (row) {
+        tbody.appendChild(row);
+      });
+      ascending = !ascending;
+      sortBtn.textContent = ascending ? "Vize'ye Göre Sırala ▲" : "Vize'ye Göre Sırala ▼";
+    });
+
+    var btnImg = document.getElementById("btnImg");
+    var img = document.getElementsByClassName("mainImage")[0];
+    var imgA = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwByxhq3cYT6CXSdOc5JnhtALS8S1XUPS6Zg&s";
+    var imgB = "https://galeri3.arkitera.com/var/thumbs/Proje2/%C3%87ankaya-%C3%9Cniversitesi-Yeni-Kamp%C3%BCs%C3%BC/CU_gen3.jpg.jpeg";
+    var showingA = true;
+
+    btnImg.addEventListener("click", function () {
+      if (showingA) {
+        img.src = imgB;
+      } else {
+        img.src = imgA;
+      }
+      showingA = !showingA;
+    });
+  </script>
 </body>
 </html>
