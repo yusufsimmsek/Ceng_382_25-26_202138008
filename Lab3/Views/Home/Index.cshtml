@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0">Student Grade Table</h2>
+        <button id="btnCalc" type="button" class="btn btn-primary">Calculate Letter Grades</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Student</th>
+                    <th style="width: 160px;">Midterm</th>
+                    <th style="width: 160px;">Final</th>
+                    <th style="width: 180px;">Letter Grade</th>
+                </tr>
+            </thead>
+            <tbody id="gradeBody">
+                <tr data-midterm="70" data-final="80">
+                    <td>1</td>
+                    <td>Ayşe</td>
+                    <td>70</td>
+                    <td>80</td>
+                    <td class="letter text-danger fw-semibold">-</td>
+                </tr>
+                <tr data-midterm="55" data-final="60">
+                    <td>2</td>
+                    <td>Mehmet</td>
+                    <td>55</td>
+                    <td>60</td>
+                    <td class="letter text-danger fw-semibold">-</td>
+                </tr>
+                <tr data-midterm="90" data-final="75">
+                    <td>3</td>
+                    <td>Zeynep</td>
+                    <td>90</td>
+                    <td>75</td>
+                    <td class="letter text-danger fw-semibold">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-secondary-subtle rounded-2 p-3 text-muted small">
+        Calculated with Midterm: 40%, Final: 60%
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var btn = document.getElementById("btnCalc");
+        var body = document.getElementById("gradeBody");
+
+        function toLetter(score) {
+            if (score >= 90) return "AA";
+            if (score >= 85) return "BA";
+            if (score >= 80) return "BB";
+            if (score >= 75) return "CB";
+            if (score >= 70) return "CC";
+            if (score >= 65) return "DC";
+            if (score >= 60) return "DD";
+            if (score >= 55) return "FD";
+            return "FF";
+        }
+
+        function calculateAll() {
+            var rows = body.querySelectorAll("tr");
+            for (var i = 0; i < rows.length; i++) {
+                var r = rows[i];
+                var mid = Number(r.getAttribute("data-midterm"));
+                var fin = Number(r.getAttribute("data-final"));
+                var total = mid * 0.4 + fin * 0.6;
+                var letter = toLetter(total);
+                var cell = r.querySelector(".letter");
+                if (cell) cell.textContent = letter;
+            }
+        }
+
+        btn.addEventListener("click", calculateAll);
+        calculateAll();
+    </script>
+}
