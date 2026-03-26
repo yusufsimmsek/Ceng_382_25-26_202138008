@@ -1,0 +1,229 @@
+@page
+@model Lab3.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">Week 4 Dashboard</h2>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">1. Registered Users</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 120px;">Photo</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Users.Count == 0)
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">No users found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(user.ProfilePhotoDataUrl))
+                                {
+                                    <img src="@user.ProfilePhotoDataUrl" alt="Profile" class="rounded-circle user-thumb" />
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">No Photo</span>
+                                }
+                            </td>
+                            <td>@user.UserName</td>
+                            <td>@user.Email</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">2. Gallery Upload</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-page-handler="UploadImage" enctype="multipart/form-data" class="row g-3 align-items-end mb-3">
+            <div class="col-md-9">
+                <label asp-for="GalleryFile" class="form-label">Select Image</label>
+                <input asp-for="GalleryFile" type="file" class="form-control" id="galleryFile" accept="image/*" />
+            </div>
+            <div class="col-md-3 d-grid">
+                <button type="submit" class="btn btn-primary">Upload to Database</button>
+            </div>
+        </form>
+
+        <div id="previewWrapper" class="mb-3 d-none">
+            <div class="small text-muted mb-2">Client-side preview (not saved yet):</div>
+            <img id="previewImage" class="img-fluid rounded border" alt="Preview" style="max-height: 220px;" />
+        </div>
+
+        <div class="row g-3">
+        @if (Model.GalleryImages.Count == 0)
+        {
+            <div class="col-12">
+                <div class="text-muted">No images saved yet.</div>
+            </div>
+        }
+        else
+        {
+            @foreach (var image in Model.GalleryImages)
+            {
+                <div class="col-sm-6 col-lg-3">
+                    <div class="border rounded p-2 h-100 bg-light-subtle">
+                        <img src="@image.DataUrl" alt="@image.FileName" class="img-fluid rounded gallery-thumb mb-2" />
+                        <div class="small fw-semibold text-truncate">@image.FileName</div>
+                        <div class="small text-muted">@Math.Round(image.Size / 1024.0, 2) KB</div>
+                    </div>
+                </div>
+            }
+        }
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">3. Student Grade Table</h5>
+        <button id="btnCalc" type="button" class="btn btn-primary btn-sm">Calculate Letter Grades</button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mb-3">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>Student</th>
+                        <th style="width: 160px;">Midterm</th>
+                        <th style="width: 160px;">Final</th>
+                        <th style="width: 180px;">Letter Grade</th>
+                    </tr>
+                </thead>
+                <tbody id="gradeBody">
+                    <tr data-midterm="70" data-final="80">
+                        <td>1</td>
+                        <td>Ayse</td>
+                        <td>70</td>
+                        <td>80</td>
+                        <td class="letter text-danger fw-semibold">-</td>
+                    </tr>
+                    <tr data-midterm="55" data-final="60">
+                        <td>2</td>
+                        <td>Mehmet</td>
+                        <td>55</td>
+                        <td>60</td>
+                        <td class="letter text-danger fw-semibold">-</td>
+                    </tr>
+                    <tr data-midterm="90" data-final="75">
+                        <td>3</td>
+                        <td>Zeynep</td>
+                        <td>90</td>
+                        <td>75</td>
+                        <td class="letter text-danger fw-semibold">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-secondary-subtle rounded-2 p-3 text-muted small">
+            Calculated with Midterm: 40%, Final: 60%
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4 border-warning">
+    <div class="card-header bg-warning-subtle">
+        <h5 class="mb-0">4. Security Vulnerability Analysis</h5>
+    </div>
+    <div class="card-body">
+        <p class="mb-2"><strong>Vulnerability:</strong> insufficient file type validation in upload flow.</p>
+        <p class="mb-2"><strong>Where:</strong> registration profile photo upload and gallery upload handlers accept uploaded files and save raw bytes into database.</p>
+        <p class="mb-2"><strong>Technical reason:</strong> the server stores file data based on client-supplied metadata and does not enforce strict MIME/extension/signature validation before persistence.</p>
+        <p class="mb-0"><strong>Potential impact:</strong> malicious files can be stored, unsafe content may later be served, storage can be abused, and future processing layers can be exposed to elevated risk.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var btn = document.getElementById("btnCalc");
+            var body = document.getElementById("gradeBody");
+
+            function toLetter(score) {
+                if (score >= 90) return "AA";
+                if (score >= 85) return "BA";
+                if (score >= 80) return "BB";
+                if (score >= 75) return "CB";
+                if (score >= 70) return "CC";
+                if (score >= 65) return "DC";
+                if (score >= 60) return "DD";
+                if (score >= 55) return "FD";
+                return "FF";
+            }
+
+            function calculateAll() {
+                var rows = body.querySelectorAll("tr");
+                for (var i = 0; i < rows.length; i++) {
+                    var r = rows[i];
+                    var mid = Number(r.getAttribute("data-midterm"));
+                    var fin = Number(r.getAttribute("data-final"));
+                    var total = mid * 0.4 + fin * 0.6;
+                    var letter = toLetter(total);
+                    var cell = r.querySelector(".letter");
+                    if (cell) {
+                        cell.textContent = letter;
+                    }
+                }
+            }
+
+            if (btn && body) {
+                btn.addEventListener("click", calculateAll);
+                calculateAll();
+            }
+        })();
+
+        (function () {
+            var fileInput = document.getElementById("galleryFile");
+            var previewWrapper = document.getElementById("previewWrapper");
+            var previewImage = document.getElementById("previewImage");
+
+            if (!fileInput || !previewWrapper || !previewImage) {
+                return;
+            }
+
+            fileInput.addEventListener("change", function (event) {
+                var target = event.target;
+                var file = target.files && target.files[0];
+                if (!file) {
+                    previewWrapper.classList.add("d-none");
+                    previewImage.removeAttribute("src");
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = String(e.target.result);
+                    previewWrapper.classList.remove("d-none");
+                };
+                reader.readAsDataURL(file);
+            });
+        })();
+    </script>
+}
