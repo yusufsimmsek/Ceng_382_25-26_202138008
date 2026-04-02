@@ -4,36 +4,81 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="auth-card card shadow-sm mx-auto">
-    <div class="card-body p-4">
-        <h4 class="mb-3">Sign In</h4>
-        <form id="account" method="post" asp-route-returnUrl="@Model.ReturnUrl">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+<div class="auth-container">
+    <div class="auth-card card shadow-lg mx-auto fade-in">
+        <div class="card-header bg-gradient text-white text-center py-4">
+            <h2 class="mb-1">
+                <i class="bi bi-box-arrow-in-right"></i> Welcome Back
+            </h2>
+            <p class="mb-0 small opacity-75">Sign in to your account</p>
+        </div>
+        
+        <div class="card-body p-5">
+            <form id="account" method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label"></label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-4 form-group-animated">
+                    <input asp-for="Input.Email" class="form-control form-control-lg" autocomplete="username" placeholder="Email" />
+                    <label asp-for="Input.Email" class="form-label ps-0">Email Address</label>
+                    <span asp-validation-for="Input.Email" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label"></label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-4 form-group-animated">
+                    <input asp-for="Input.Password" class="form-control form-control-lg" autocomplete="current-password" placeholder="Password" />
+                    <label asp-for="Input.Password" class="form-label ps-0">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="Input.RememberMe" class="form-check-input" />
-                <label asp-for="Input.RememberMe" class="form-check-label"></label>
-            </div>
+                <div class="form-check mb-4 form-group-animated">
+                    <input asp-for="Input.RememberMe" class="form-check-input" id="rememberMe" />
+                    <label asp-for="Input.RememberMe" class="form-check-label ms-2 fw-500" for="rememberMe">Remember me</label>
+                </div>
 
-            <button id="login-submit" type="submit" class="w-100 btn btn-primary">Login</button>
-        </form>
+                <button id="login-submit" type="submit" class="w-100 btn btn-primary btn-lg btn-submit mt-3">
+                    <span class="button-text">Sign In</span>
+                    <span class="button-loader" style="display: none;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </form>
 
-        <p class="small mb-0 mt-3">Need an account? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register</a></p>
+            <hr class="my-4">
+            
+            <p class="text-center mb-0">
+                Don't have an account? 
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="link-primary fw-600 text-decoration-none">Create one now</a>
+            </p>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.form-group-animated').forEach((group, index) => {
+            group.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        const loginForm = document.getElementById('account');
+        const submitBtn = document.getElementById('login-submit');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                submitBtn.querySelector('.button-text').style.display = 'none';
+                submitBtn.querySelector('.button-loader').style.display = 'inline-block';
+            });
+        }
+
+        document.querySelectorAll('input.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
 }

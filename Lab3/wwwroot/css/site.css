@@ -59,6 +59,13 @@ body {
   object-fit: cover;
 }
 
+.carousel-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  background-color: #111;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -66,4 +73,487 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* ============ Register Page Animations ============ */
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide in animation */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Card container */
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Auth card styles */
+.auth-card {
+  max-width: 520px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-5px);
+}
+
+.auth-card.fade-in {
+  animation: fadeIn 0.7s ease-out forwards;
+}
+
+/* Card header gradient */
+.card-header.bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Form groups animated */
+.form-group-animated {
+  animation: slideInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Form floating styles */
+.form-floating {
+  position: relative;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-control-plaintext {
+  padding-top: 1.625rem;
+  padding-bottom: 0.625rem;
+  height: auto;
+  transition: all 0.3s ease;
+  border: 2px solid #e9ecef;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-control-plaintext:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  background-color: #f8f9ff;
+}
+
+.form-floating > label {
+  top: 0.75rem;
+  left: 1rem;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-control-plaintext ~ label {
+  opacity: 0.65;
+  top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+/* Focused state */
+.form-floating.focused > .form-control {
+  animation: pulse 0.3s ease-out;
+}
+
+/* File input wrapper */
+.file-input-wrapper {
+  position: relative;
+  border: 2px dashed #667eea;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: #f8f9ff;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.file-input-wrapper:hover {
+  background-color: #f0f2ff;
+  border-color: #764ba2;
+}
+
+.file-input-wrapper.drag-over {
+  background-color: #e9ecff;
+  border-color: #764ba2;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.3);
+  animation: pulse 0.4s ease-out infinite;
+}
+
+.file-input-wrapper.file-selected {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.file-input-wrapper.file-selected .file-input-label {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: block;
+  color: #667eea;
+  font-weight: 500;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+/* Submit button styles */
+.btn-submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.35);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-submit span {
+  transition: all 0.3s ease;
+}
+
+.button-loader {
+  margin-left: 8px;
+}
+
+/* Link styles */
+.link-primary {
+  transition: all 0.3s ease;
+}
+
+.link-primary:hover {
+  color: #764ba2 !important;
+  text-decoration: underline !important;
+}
+
+/* Validation messages */
+.text-danger {
+  animation: slideInUp 0.3s ease-out;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Alert styles */
+.alert {
+  border-radius: 8px;
+  border: none;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.alert-danger {
+  background-color: #fee;
+  color: #c33;
+}
+
+/* ============ Global Styles ============ */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background-attachment: fixed;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* Navbar Gradient */
+.navbar-gradient {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.navbar-gradient .navbar-brand {
+  color: white !important;
+  font-size: 1.4rem;
+}
+
+.navbar-gradient .brand-icon {
+  font-size: 1.8rem;
+}
+
+.nav-link-hover {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: left 0.3s ease;
+}
+
+.nav-link-hover:hover::after {
+  left: 0;
+}
+
+/* Footer Gradient */
+.footer-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-top: auto;
+  border-top: none;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.footer-gradient a {
+  transition: all 0.3s ease;
+}
+
+.footer-gradient a:hover {
+  opacity: 0.8;
+  text-decoration: underline !important;
+}
+
+/* ============ Gallery Page Styles ============ */
+
+.gallery-container {
+  padding: 20px 0;
+}
+
+.gallery-header {
+  animation: fadeIn 0.8s ease-out forwards;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  padding: 40px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.gallery-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: slideInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.gallery-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.gallery-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.gallery-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2) !important;
+}
+
+.gallery-card .card-header {
+  border: none;
+  padding: 20px;
+}
+
+.gallery-card .card-body {
+  padding: 25px;
+}
+
+/* File Input Wrapper Gallery */
+.file-input-wrapper-gallery {
+  position: relative;
+  border: 3px dashed #667eea;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+  cursor: pointer;
+}
+
+.file-input-wrapper-gallery:hover {
+  background: linear-gradient(135deg, #f0f2ff 0%, #e9ecff 100%);
+  border-color: #764ba2;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label-gallery {
+  display: block;
+  cursor: pointer;
+  color: #667eea;
+  transition: all 0.3s ease;
+}
+
+.file-input-label-gallery:hover {
+  color: #764ba2;
+}
+
+/* Carousel Gallery */
+.carousel-gallery {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.carousel-image-gallery {
+  height: 350px;
+  object-fit: cover;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.carousel-control-gallery {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.5) 0%, transparent 100%);
+  width: 60px;
+  transition: all 0.3s ease;
+}
+
+.carousel-control-gallery:hover {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.8) 0%, transparent 100%);
+}
+
+/* Folder Preview Cards */
+.folder-preview-card {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.folder-preview-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.folder-preview-card img {
+  height: 150px;
+  object-fit: cover;
+}
+
+/* Background gradients for headers */
+.bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #764ba2 0%, #5a3a7a 100%) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .gallery-header {
+    padding: 30px 15px;
+  }
+
+  .gallery-card {
+    margin-bottom: 20px;
+  }
+
+  .carousel-image-gallery {
+    height: 250px;
+  }
+
+  .file-input-wrapper-gallery {
+    padding: 2rem 1rem;
+  }
+
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .nav-link-hover {
+    padding: 0.75rem 0 !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .auth-container {
+    min-height: auto;
+    padding: 15px;
+  }
+
+  .auth-card {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  .card-body {
+    padding: 1.5rem 1rem !important;
+  }
+
+  .btn-submit {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .file-input-wrapper {
+    padding: 1.5rem 1rem;
+  }
 }

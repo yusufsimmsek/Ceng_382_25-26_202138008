@@ -4,43 +4,130 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="auth-card card shadow-sm mx-auto">
-    <div class="card-body p-4">
-        <h4 class="mb-3">Create Account</h4>
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+<div class="auth-container">
+    <div class="auth-card card shadow-lg mx-auto fade-in">
+        <div class="card-header bg-gradient text-white text-center py-4">
+            <h2 class="mb-1">
+                <i class="bi bi-person-plus-fill"></i> Create Account
+            </h2>
+            <p class="mb-0 small opacity-75">Join us today</p>
+        </div>
+        
+        <div class="card-body p-5">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label"></label>
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-4 form-group-animated">
+                    <input asp-for="Input.Email" class="form-control form-control-lg" autocomplete="username" placeholder="Email" />
+                    <label asp-for="Input.Email" class="form-label ps-0">Email Address</label>
+                    <span asp-validation-for="Input.Email" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label"></label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-4 form-group-animated">
+                    <input asp-for="Input.Password" class="form-control form-control-lg" autocomplete="new-password" placeholder="Password" />
+                    <label asp-for="Input.Password" class="form-label ps-0">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.ConfirmPassword" class="form-label"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-4 form-group-animated">
+                    <input asp-for="Input.ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" placeholder="Confirm Password" />
+                    <label asp-for="Input.ConfirmPassword" class="form-label ps-0">Confirm Password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Input.ProfilePhoto" class="form-label">Profile Photo</label>
-                <input asp-for="Input.ProfilePhoto" class="form-control" accept="image/*" />
-                <span asp-validation-for="Input.ProfilePhoto" class="text-danger"></span>
-            </div>
+                <div class="mb-4 form-group-animated">
+                    <label asp-for="Input.ProfilePhoto" class="form-label fw-500">Profile Photo</label>
+                    <div class="file-input-wrapper">
+                        <input asp-for="Input.ProfilePhoto" class="form-control form-control-lg file-input" accept="image/*" />
+                        <span class="file-input-label">Click to select image or drag and drop</span>
+                    </div>
+                    <span asp-validation-for="Input.ProfilePhoto" class="text-danger small mt-1 d-block"></span>
+                </div>
 
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-primary">Register</button>
-        </form>
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-primary btn-lg btn-submit mt-3">
+                    <span class="button-text">Create Account</span>
+                    <span class="button-loader" style="display: none;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </form>
 
-        <p class="small mb-0 mt-3">Already registered? <a asp-page="./Login">Login</a></p>
+            <hr class="my-4">
+            
+            <p class="text-center mb-0">
+                Already have an account? 
+                <a asp-page="./Login" class="link-primary fw-600 text-decoration-none">Sign in here</a>
+            </p>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Animasi form inputs
+        document.querySelectorAll('.form-group-animated').forEach((group, index) => {
+            group.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // File input animasyonu
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+        const fileInput = document.querySelector('.file-input');
+        
+        if (fileInputWrapper && fileInput) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileInputWrapper.addEventListener(eventName, () => {
+                    fileInputWrapper.classList.add('drag-over');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileInputWrapper.addEventListener(eventName, () => {
+                    fileInputWrapper.classList.remove('drag-over');
+                });
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const label = fileInputWrapper.querySelector('.file-input-label');
+                    label.textContent = `✓ ${this.files[0].name}`;
+                    fileInputWrapper.classList.add('file-selected');
+                }
+            });
+        }
+
+        // Submit button animasyonu
+        const registerForm = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('registerSubmit');
+
+        if (registerForm) {
+            registerForm.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                submitBtn.querySelector('.button-text').style.display = 'none';
+                submitBtn.querySelector('.button-loader').style.display = 'inline-block';
+            });
+        }
+
+        // Input focus animasyonu
+        document.querySelectorAll('input.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
 }

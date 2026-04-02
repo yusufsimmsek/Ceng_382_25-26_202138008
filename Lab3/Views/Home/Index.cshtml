@@ -1,86 +1,191 @@
+@model Lab3.Models.ViewModels.Home.HomeIndexViewModel
+
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Gallery Upload";
 }
 
-<div class="py-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="mb-0">Student Grade Table</h2>
-        <button id="btnCalc" type="button" class="btn btn-primary">Calculate Letter Grades</button>
+<div class="gallery-container">
+    <div class="gallery-header text-white text-center mb-5 fade-in">
+        <h1 class="display-5 fw-bold mb-3">📸 Image Gallery</h1>
+        <p class="lead mb-0">Upload and manage your images with ease</p>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th style="width: 80px;">ID</th>
-                    <th>Student</th>
-                    <th style="width: 160px;">Midterm</th>
-                    <th style="width: 160px;">Final</th>
-                    <th style="width: 180px;">Letter Grade</th>
-                </tr>
-            </thead>
-            <tbody id="gradeBody">
-                <tr data-midterm="70" data-final="80">
-                    <td>1</td>
-                    <td>Ayşe</td>
-                    <td>70</td>
-                    <td>80</td>
-                    <td class="letter text-danger fw-semibold">-</td>
-                </tr>
-                <tr data-midterm="55" data-final="60">
-                    <td>2</td>
-                    <td>Mehmet</td>
-                    <td>55</td>
-                    <td>60</td>
-                    <td class="letter text-danger fw-semibold">-</td>
-                </tr>
-                <tr data-midterm="90" data-final="75">
-                    <td>3</td>
-                    <td>Zeynep</td>
-                    <td>90</td>
-                    <td>75</td>
-                    <td class="letter text-danger fw-semibold">-</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-lg gallery-card fade-in">
+                <div class="card-header bg-gradient text-white">
+                    <h5 class="mb-0"><i class="me-2">📁</i> Folder Preview (JavaScript)</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Select a folder from your device and preview all images instantly without uploading to the server.
+                    </p>
+                    <div class="file-input-wrapper-gallery">
+                        <input id="folderInput" class="file-input" type="file" webkitdirectory directory multiple accept="image/*" />
+                        <label for="folderInput" class="file-input-label-gallery">
+                            <i class="display-6">📂</i>
+                            <p class="fw-600 mt-2">Click to select folder</p>
+                            <small class="text-muted">or drag and drop a folder</small>
+                        </label>
+                    </div>
+                    <div id="folderPreview" class="row g-3 mt-4"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="bg-secondary-subtle rounded-2 p-3 text-muted small">
-        Calculated with Midterm: 40%, Final: 60%
+        <div class="col-lg-6">
+            <div class="card shadow-lg gallery-card fade-in" style="animation-delay: 0.1s">
+                <div class="card-header bg-gradient-dark text-white">
+                    <h5 class="mb-0"><i class="me-2">💾</i> Database Upload (C#)</h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["UploadError"] is string uploadError)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="me-2">⚠️</i>@uploadError
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["UploadMessage"] is string uploadMessage)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="me-2">✅</i>@uploadMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-600">Select Images</label>
+                            <input class="form-control form-control-lg" type="file" name="files" multiple accept="image/*" />
+                        </div>
+                        <button type="submit" class="w-100 btn btn-lg btn-submit">
+                            <i class="me-2">📤</i> Upload To Database
+                        </button>
+                    </form>
+
+                    @if (Model.Images.Count == 0)
+                    {
+                        <div class="alert alert-info mt-4 mb-0">
+                            <i class="me-2">💡</i>No images in the database yet. Upload images to show the carousel.
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="dbCarousel" class="carousel slide carousel-gallery mt-4" data-bs-ride="carousel">
+                            @if (Model.Images.Count > 1)
+                            {
+                                <div class="carousel-indicators">
+                                    @for (var i = 0; i < Model.Images.Count; i++)
+                                    {
+                                        <button type="button"
+                                                data-bs-target="#dbCarousel"
+                                                data-bs-slide-to="@i"
+                                                class="@(i == 0 ? "active" : null)"
+                                                aria-current="@(i == 0 ? "true" : null)"
+                                                aria-label="Slide @(i + 1)"></button>
+                                    }
+                                </div>
+                            }
+
+                            <div class="carousel-inner rounded-lg overflow-hidden">
+                                @for (var i = 0; i < Model.Images.Count; i++)
+                                {
+                                    var image = Model.Images[i];
+                                    <div class="carousel-item @(i == 0 ? "active" : null)">
+                                        <img class="d-block w-100 carousel-image carousel-image-gallery"
+                                             src="@Url.Action("Image", "Home", new { id = image.Id })"
+                                             alt="@image.FileName" />
+                                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded-top p-3">
+                                            <div class="fw-semibold">📸 @image.FileName</div>
+                                            <div class="small">@($"{Math.Max(1, image.Size / 1024)} KB")</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (Model.Images.Count > 1)
+                            {
+                                <button class="carousel-control-prev carousel-control-gallery" type="button" data-bs-target="#dbCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next carousel-control-gallery" type="button" data-bs-target="#dbCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        var btn = document.getElementById("btnCalc");
-        var body = document.getElementById("gradeBody");
+        (function () {
+            var folderInput = document.getElementById("folderInput");
+            var preview = document.getElementById("folderPreview");
 
-        function toLetter(score) {
-            if (score >= 90) return "AA";
-            if (score >= 85) return "BA";
-            if (score >= 80) return "BB";
-            if (score >= 75) return "CB";
-            if (score >= 70) return "CC";
-            if (score >= 65) return "DC";
-            if (score >= 60) return "DD";
-            if (score >= 55) return "FD";
-            return "FF";
-        }
-
-        function calculateAll() {
-            var rows = body.querySelectorAll("tr");
-            for (var i = 0; i < rows.length; i++) {
-                var r = rows[i];
-                var mid = Number(r.getAttribute("data-midterm"));
-                var fin = Number(r.getAttribute("data-final"));
-                var total = mid * 0.4 + fin * 0.6;
-                var letter = toLetter(total);
-                var cell = r.querySelector(".letter");
-                if (cell) cell.textContent = letter;
+            function clearPreview() {
+                preview.innerHTML = "";
             }
-        }
 
-        btn.addEventListener("click", calculateAll);
-        calculateAll();
+            function previewFolder(files) {
+                clearPreview();
+
+                var imageFiles = Array.from(files).filter(function (file) {
+                    return file.type && file.type.indexOf("image/") === 0;
+                });
+
+                if (imageFiles.length === 0) {
+                    preview.innerHTML = "<div class='col-12 text-muted'><i>📭</i> No images found in selected folder.</div>";
+                    return;
+                }
+
+                imageFiles.forEach(function (file, index) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        var col = document.createElement("div");
+                        col.className = "col-6 col-md-4 col-lg-6";
+                        col.style.animation = `slideInUp 0.5s ease-out forwards`;
+                        col.style.animationDelay = `${index * 0.05}s`;
+                        col.style.opacity = "0";
+
+                        var card = document.createElement("div");
+                        card.className = "card h-100 shadow-sm folder-preview-card";
+
+                        var img = document.createElement("img");
+                        img.className = "card-img-top gallery-thumb";
+                        img.alt = file.name;
+                        img.src = event.target.result;
+
+                        var body = document.createElement("div");
+                        body.className = "card-body py-2";
+
+                        var title = document.createElement("div");
+                        title.className = "small text-truncate fw-600";
+                        title.title = file.webkitRelativePath || file.name;
+                        title.textContent = file.webkitRelativePath || file.name;
+
+                        var size = document.createElement("div");
+                        size.className = "small text-muted";
+                        size.textContent = `${Math.max(1, Math.round(file.size / 1024))} KB`;
+
+                        body.appendChild(title);
+                        body.appendChild(size);
+                        card.appendChild(img);
+                        card.appendChild(body);
+                        col.appendChild(card);
+                        preview.appendChild(col);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            folderInput.addEventListener("change", function () {
+                previewFolder(folderInput.files || []);
+            });
+        })();
     </script>
 }
