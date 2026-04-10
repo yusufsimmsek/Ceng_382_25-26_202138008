@@ -1,3 +1,10 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+
+    string NavClass(string controller) =>
+        currentController.Equals(controller, StringComparison.OrdinalIgnoreCase) ? "is-active" : string.Empty;
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,41 +17,68 @@
     <link rel="stylesheet" href="~/CampusFlow.styles.css" asp-append-version="true" />
 </head>
 <body class="app-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-grid"></div>
+
     <div class="app-shell">
         <aside class="sidebar" id="sidebar">
             <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <span class="brand-mark">CF</span>
-                <span>
+                <span class="brand-copy">
                     <strong>CampusFlow</strong>
-                    <small>Smart campus engagement</small>
+                    <small>Smart Campus Event Platform</small>
                 </span>
             </a>
 
-            <nav class="sidebar-nav">
-                <a asp-controller="Home" asp-action="Index">Overview</a>
-                <a asp-controller="Events" asp-action="Index">Events</a>
-                <a asp-controller="Clubs" asp-action="Index">Clubs</a>
-                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                <a asp-controller="Home" asp-action="Privacy">Project Notes</a>
-            </nav>
+            <div class="sidebar-section">
+                <span class="sidebar-label">Navigation</span>
+                <nav class="sidebar-nav">
+                    <a class="@NavClass("Home")" asp-controller="Home" asp-action="Index">
+                        <span>Overview</span>
+                        <small>Landing</small>
+                    </a>
+                    <a class="@NavClass("Events")" asp-controller="Events" asp-action="Index">
+                        <span>Events</span>
+                        <small>Schedule</small>
+                    </a>
+                    <a class="@NavClass("Clubs")" asp-controller="Clubs" asp-action="Index">
+                        <span>Clubs</span>
+                        <small>Organizers</small>
+                    </a>
+                    <a class="@NavClass("Dashboard")" asp-controller="Dashboard" asp-action="Index">
+                        <span>Dashboard</span>
+                        <small>Metrics</small>
+                    </a>
+                </nav>
+            </div>
 
             <div class="sidebar-card">
-                <span class="eyebrow">Week 1 Focus</span>
-                <h6>MVC foundation</h6>
-                <p>Branding, layout, relational models and a clean starter interface.</p>
+                <span class="eyebrow">CampusFlow</span>
+                <h6>Campus at a glance</h6>
+                <p>Discover activities, follow student clubs and keep campus life in one organized place.</p>
+                <div class="mini-stack">
+                    <span>Events</span>
+                    <span>Clubs</span>
+                    <span>Participation</span>
+                </div>
             </div>
         </aside>
 
         <div class="page-frame">
             <header class="topbar">
-                <div>
-                    <p class="eyebrow">Campus web project</p>
+                <div class="topbar-copy">
+                    <p class="eyebrow">CENG 382 term project</p>
                     <h1>@(ViewData["Title"] ?? "CampusFlow")</h1>
                 </div>
 
                 <div class="topbar-actions">
+                    <div class="topbar-status">
+                        <span class="status-dot"></span>
+                        <span>Live campus feed</span>
+                    </div>
+                    <a class="ghost-link" asp-controller="Events" asp-action="Index">Browse events</a>
                     <button class="sidebar-toggle" id="sidebarToggle" type="button">Menu</button>
-                    <a class="ghost-link" asp-controller="Dashboard" asp-action="Index">Preview Dashboard</a>
                 </div>
             </header>
 
@@ -53,13 +87,13 @@
             </main>
 
             <footer class="footer">
-                <div>
+                <div class="footer-block">
                     <strong>CampusFlow</strong>
-                    <span> MVC project scaffold for CENG 382 </span>
+                    <span>Campus events and student communities on one platform.</span>
                 </div>
-                <div>
-                    <span>&copy; 2026</span>
-                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Project scope</a>
+                <div class="footer-block footer-links">
+                    <a asp-controller="Events" asp-action="Index">Events</a>
+                    <a asp-controller="Clubs" asp-action="Index">Clubs</a>
                 </div>
             </footer>
         </div>
