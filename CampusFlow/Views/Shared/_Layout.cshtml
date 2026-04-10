@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CampusFlow</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CampusFlow.styles.css" asp-append-version="true" />
+</head>
+<body class="app-body">
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark">CF</span>
+                <span>
+                    <strong>CampusFlow</strong>
+                    <small>Smart campus engagement</small>
+                </span>
+            </a>
+
+            <nav class="sidebar-nav">
+                <a asp-controller="Home" asp-action="Index">Overview</a>
+                <a asp-controller="Events" asp-action="Index">Events</a>
+                <a asp-controller="Clubs" asp-action="Index">Clubs</a>
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-controller="Home" asp-action="Privacy">Project Notes</a>
+            </nav>
+
+            <div class="sidebar-card">
+                <span class="eyebrow">Week 1 Focus</span>
+                <h6>MVC foundation</h6>
+                <p>Branding, layout, relational models and a clean starter interface.</p>
+            </div>
+        </aside>
+
+        <div class="page-frame">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Campus web project</p>
+                    <h1>@(ViewData["Title"] ?? "CampusFlow")</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="sidebar-toggle" id="sidebarToggle" type="button">Menu</button>
+                    <a class="ghost-link" asp-controller="Dashboard" asp-action="Index">Preview Dashboard</a>
+                </div>
+            </header>
+
+            <main role="main" class="main-content">
+                @RenderBody()
+            </main>
+
+            <footer class="footer">
+                <div>
+                    <strong>CampusFlow</strong>
+                    <span> MVC project scaffold for CENG 382 </span>
+                </div>
+                <div>
+                    <span>&copy; 2026</span>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Project scope</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

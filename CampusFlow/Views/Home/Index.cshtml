@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Overview";
+}
+
+<section class="hero-grid">
+    <div class="hero-copy">
+        <span class="eyebrow">Project proposal</span>
+        <h2>Smart campus event management with measurable engagement.</h2>
+        <p>
+            CampusFlow helps students discover events, join activities, and build an engagement score
+            while clubs manage announcements and participation in one structured system.
+        </p>
+
+        <div class="hero-actions">
+            <a class="btn btn-primary" asp-controller="Events" asp-action="Index">Explore Events</a>
+            <a class="btn btn-outline-light" asp-controller="Clubs" asp-action="Index">View Clubs</a>
+        </div>
+    </div>
+
+    <div class="spotlight-card">
+        <span class="eyebrow">Brand direction</span>
+        <h3>Dark, minimal and professional</h3>
+        <ul class="feature-list">
+            <li>Centralized campus event discovery</li>
+            <li>Participation tracking with relational data</li>
+            <li>Gamified engagement score logic</li>
+            <li>Scalable dashboard structure for future weeks</li>
+        </ul>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="info-card">
+        <span class="metric">2</span>
+        <h3>User roles</h3>
+        <p>Student and Club Administrator roles shape the core authorization plan.</p>
+    </article>
+
+    <article class="info-card">
+        <span class="metric">4</span>
+        <h3>Main entities</h3>
+        <p>Users, Clubs, Events and UserEvents form the first database design.</p>
+    </article>
+
+    <article class="info-card">
+        <span class="metric">10x</span>
+        <h3>Score formula</h3>
+        <p>Each joined event contributes ten points to the engagement score.</p>
+    </article>
+</section>
+
+<section class="content-grid">
+    <article class="panel-card">
+        <div class="panel-head">
+            <span class="eyebrow">Week 1 delivery</span>
+            <h3>Core setup completed in the scaffold</h3>
+        </div>
+        <ul class="feature-list">
+            <li>New project branch and MVC structure</li>
+            <li>Relational model classes for the proposal</li>
+            <li>Sidebar, navbar, footer and starter styling</li>
+            <li>Placeholder pages for events, clubs and dashboard</li>
+        </ul>
+    </article>
+
+    <article class="panel-card">
+        <div class="panel-head">
+            <span class="eyebrow">Next steps</span>
+            <h3>Natural roadmap for upcoming weeks</h3>
+        </div>
+        <div class="timeline">
+            <div>
+                <strong>Authentication</strong>
+                <p>Student and club admin login flow.</p>
+            </div>
+            <div>
+                <strong>CRUD management</strong>
+                <p>Event creation, editing and listing pages.</p>
+            </div>
+            <div>
+                <strong>Participation logic</strong>
+                <p>Join actions and engagement statistics.</p>
+            </div>
+        </div>
+    </article>
+</section>
