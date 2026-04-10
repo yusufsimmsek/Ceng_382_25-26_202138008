@@ -1,0 +1,25 @@
+<footer class="sofranet-footer mt-5">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <img src="~/images/logo.svg" alt="" width="32" height="32" class="me-2" />
+                    <div>
+                        <div class="fw-bold">Sofranet</div>
+                        <small class="text-light opacity-75">Mahallendeki lezzet kapına gelsin</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <a asp-controller="Home" asp-action="Index" class="text-light text-decoration-none me-3">Anasayfa</a>
+                <a asp-controller="Menu" asp-action="Index" class="text-light text-decoration-none me-3">Menüler</a>
+                <a asp-controller="Home" asp-action="Privacy" class="text-light text-decoration-none">Gizlilik</a>
+            </div>
+        </div>
+        <hr class="border-light opacity-25 my-3" />
+        <div class="d-flex justify-content-between flex-wrap small text-light opacity-75">
+            <span>&copy; @DateTime.Now.Year Sofranet</span>
+            <span>Yusuf Şimşek - 202138008 - CENG 382</span>
+        </div>
+    </div>
+</footer>

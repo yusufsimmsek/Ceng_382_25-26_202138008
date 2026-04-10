@@ -1,0 +1,45 @@
+## Build output
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.swp
+
+## ASP.NET Core / development settings
+appsettings.Development.json
+*.pidb
+*.svclog
+*.scc
+
+## Logs
+logs/
+*.log
+
+## Uploads (keep folder, ignore files)
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+
+## SQLite db
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Claude Code dev notes
+CLAUDE.md
+PROJECT_PLAN.md

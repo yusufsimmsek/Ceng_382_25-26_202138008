@@ -1,0 +1,144 @@
+:root {
+    --sofra-primary: #E63946;
+    --sofra-primary-dark: #B5232E;
+    --sofra-secondary: #F77F00;
+    --sofra-bg: #FFF8F0;
+    --sofra-text: #2B2B2B;
+    --sofra-muted: #6c757d;
+    --sofra-card: #ffffff;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background: var(--sofra-bg);
+    color: var(--sofra-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+a {
+    color: var(--sofra-primary);
+}
+a:hover {
+    color: var(--sofra-primary-dark);
+}
+
+/* Navbar */
+.sofranet-navbar {
+    background: linear-gradient(135deg, var(--sofra-primary), var(--sofra-primary-dark));
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.sofranet-navbar .navbar-brand,
+.sofranet-navbar .nav-link {
+    color: #fff !important;
+}
+.sofranet-navbar .nav-link:hover {
+    color: #ffd6d8 !important;
+}
+.sofranet-navbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.sofranet-navbar .btn.btn-light {
+    background: #fff;
+    border: none;
+    font-weight: 500;
+}
+.sofranet-navbar .btn.btn-light:hover {
+    background: #f5f5f5;
+}
+
+/* Footer */
+.sofranet-footer {
+    background: #2B2B2B;
+    color: #fff;
+}
+.sofranet-footer a:hover {
+    text-decoration: underline !important;
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #FFE5D6 0%, #FFF8F0 100%);
+    border-radius: 20px;
+    padding: 4rem 2rem;
+    margin-bottom: 2rem;
+}
+.hero h1 {
+    font-weight: 700;
+    color: var(--sofra-primary);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+}
+.hero p.lead {
+    font-size: 1.25rem;
+    color: var(--sofra-muted);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--sofra-primary);
+    border-color: var(--sofra-primary);
+}
+.btn-primary:hover {
+    background-color: var(--sofra-primary-dark);
+    border-color: var(--sofra-primary-dark);
+}
+.btn-outline-primary {
+    color: var(--sofra-primary);
+    border-color: var(--sofra-primary);
+}
+.btn-outline-primary:hover {
+    background-color: var(--sofra-primary);
+    color: #fff;
+}
+.btn-secondary, .bg-secondary {
+    background-color: var(--sofra-secondary) !important;
+    border-color: var(--sofra-secondary) !important;
+}
+
+/* Cards */
+.feature-card {
+    background: var(--sofra-card);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.feature-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Generic card */
+.menu-card {
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease;
+    background: var(--sofra-card);
+}
+.menu-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Forms */
+.form-control:focus, .form-select:focus {
+    border-color: var(--sofra-primary);
+    box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
+}

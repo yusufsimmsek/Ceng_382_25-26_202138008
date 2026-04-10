@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+    <rect width="400" height="300" fill="#EEE8E0" />
+    <g fill="#B0A89E" font-family="Poppins, sans-serif" text-anchor="middle">
+        <circle cx="200" cy="125" r="35" fill="none" stroke="#B0A89E" stroke-width="3" />
+        <line x1="180" y1="105" x2="220" y2="145" stroke="#B0A89E" stroke-width="3" stroke-linecap="round" />
+        <text x="200" y="210" font-size="20" font-weight="500">Görsel yok</text>
+    </g>
+</svg>
