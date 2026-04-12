@@ -1,0 +1,84 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <span class="brand-emoji">🍽️</span>
+      <span class="brand-text">Sofranet</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+
+        <% if (!user) { %>
+          <li class="nav-item"><a class="nav-link" href="/login">Giriş Yap</a></li>
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm ms-lg-2" href="/register">Kayıt Ol</a>
+          </li>
+
+        <% } else if (user.role === 'user') { %>
+          <li class="nav-item"><a class="nav-link" href="/menu">Menüler</a></li>
+          <li class="nav-item"><a class="nav-link" href="/cart">Sepetim</a></li>
+          <li class="nav-item"><a class="nav-link" href="/orders">Siparişlerim</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <%= user.name || user.email %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+              <li><a class="dropdown-item" href="/profile">Profil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/logout?_method=DELETE" method="POST" class="m-0">
+                  <button type="submit" class="dropdown-item">Çıkış</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+
+        <% } else if (user.role === 'caterer') { %>
+          <li class="nav-item"><a class="nav-link" href="/caterer/menu">Menü Yönetimi</a></li>
+          <li class="nav-item"><a class="nav-link" href="/caterer/orders">Siparişler</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <%= user.name || user.email %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/caterer/dashboard">Dashboard</a></li>
+              <li><a class="dropdown-item" href="/profile">Profil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/logout?_method=DELETE" method="POST" class="m-0">
+                  <button type="submit" class="dropdown-item">Çıkış</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+
+        <% } else if (user.role === 'admin') { %>
+          <li class="nav-item"><a class="nav-link" href="/admin/users">Kullanıcılar</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/caterers">Caterer'lar</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/orders">Siparişler</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/logs">Loglar</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <%= user.name || user.email %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/admin/dashboard">Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/logout?_method=DELETE" method="POST" class="m-0">
+                  <button type="submit" class="dropdown-item">Çıkış</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        <% } %>
+
+      </ul>
+    </div>
+  </div>
+</nav>

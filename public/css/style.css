@@ -1,0 +1,129 @@
+:root {
+  --primary: #E63946;
+  --primary-dark: #c12c39;
+  --secondary: #F77F00;
+  --bg: #FFF8F0;
+  --text: #2B2B2B;
+  --muted: #6c757d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* navbar */
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+.navbar-brand .brand-emoji {
+  font-size: 1.6rem;
+  margin-right: 6px;
+}
+.navbar-brand .brand-text {
+  color: var(--primary);
+}
+.navbar .nav-link {
+  font-weight: 500;
+  color: var(--text);
+}
+.navbar .nav-link:hover {
+  color: var(--primary);
+}
+
+/* buttons */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* hero */
+.hero {
+  padding: 80px 20px 40px;
+}
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.hero-tagline {
+  font-size: 1.5rem;
+  color: var(--secondary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* features */
+.feature-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.feature-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* footer */
+.site-footer {
+  background-color: #2B2B2B;
+  color: white;
+}
+.site-footer .small {
+  font-size: 0.85rem;
+}
+
+/* mobile */
+@media (max-width: 768px) {
+  .hero {
+    padding: 50px 15px 30px;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .hero-tagline {
+    font-size: 1.2rem;
+  }
+  .hero-desc {
+    font-size: 1rem;
+  }
+}

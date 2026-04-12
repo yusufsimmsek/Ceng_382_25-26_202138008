@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 
 // routes
 app.get('/', (req, res) => {
-  res.send('Sofranet - hosgeldin! (kurulum asamasinda)');
+  res.render('home', { title: 'Anasayfa' });
 });
 
 // 404
