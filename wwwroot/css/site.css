@@ -142,3 +142,15 @@ a:hover {
     border-color: var(--sofra-primary);
     box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
 }
+
+/* Auth pages (login/register) */
+body.auth-page {
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE3D5 100%);
+}
+body.auth-page main {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+body.auth-page .card {
+    border-radius: 16px;
+}

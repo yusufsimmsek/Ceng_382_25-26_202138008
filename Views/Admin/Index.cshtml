@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Yönetim Paneli";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <h2 class="mb-2">Yönetim Paneli</h2>
+        <p class="text-muted">Sistem genelinde kullanıcı, caterer ve siparişleri buradan yönetebilirsin.</p>
+
+        <div class="row g-3 mt-2">
+            <div class="col-md-3">
+                <a href="/Admin/Users" class="btn btn-outline-primary w-100 py-3">Kullanıcılar</a>
+            </div>
+            <div class="col-md-3">
+                <a href="/Admin/Caterers" class="btn btn-outline-primary w-100 py-3">Cateterlar</a>
+            </div>
+            <div class="col-md-3">
+                <a href="/Admin/Orders" class="btn btn-outline-primary w-100 py-3">Siparişler</a>
+            </div>
+            <div class="col-md-3">
+                <a href="/Admin/Logs" class="btn btn-outline-primary w-100 py-3">Loglar</a>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+        <small class="text-muted">Sistem geneli istatistikler ve listeler yakında.</small>
+    </div>
+</div>

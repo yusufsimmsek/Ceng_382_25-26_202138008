@@ -1,8 +1,8 @@
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
 namespace Sofranet.Services;
 
-// Placeholder - gerçek Google Maps API entegrasyonu Prompt 5'te
 public class LocationService : ILocationService
 {
     private readonly HttpClient _http;
@@ -16,30 +16,59 @@ public class LocationService : ILocationService
         _logger = logger;
     }
 
-    public Task<(double lat, double lng)?> GeocodeAsync(string address)
+    private string? ApiKey => _config["GoogleMaps:ApiKey"];
+
+    private bool HasKey()
     {
-        // TODO: Google Geocoding API çağrısı
-        return Task.FromResult<(double, double)?>(null);
+        var k = ApiKey;
+        return !string.IsNullOrWhiteSpace(k) && k != "your_api_key" && k != "placeholder";
+    }
+
+    public async Task<(double Lat, double Lng)?> GeocodeAddressAsync(string address)
+    {
+        if (string.IsNullOrWhiteSpace(address)) return null;
+        if (!HasKey()) return null;
+
+        try
+        {
+            var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address)}&key={ApiKey}&region=tr&language=tr";
+            var json = await _http.GetStringAsync(url);
+
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            var status = root.GetProperty("status").GetString();
+            if (status != "OK") return null;
+
+            var results = root.GetProperty("results");
+            if (results.GetArrayLength() == 0) return null;
+
+            var loc = results[0].GetProperty("geometry").GetProperty("location");
+            return (loc.GetProperty("lat").GetDouble(), loc.GetProperty("lng").GetDouble());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Geocode hatasi: {Address}", address);
+            return null;
+        }
     }
 
     public Task<double?> DistanceKmAsync(double lat1, double lng1, double lat2, double lng2)
     {
-        // Google Distance Matrix yerine şimdilik haversine
+        // Sonra Distance Matrix API'ye geçilebilir, şimdilik haversine
         return Task.FromResult<double?>(HaversineKm(lat1, lng1, lat2, lng2));
     }
 
-    // Standart haversine formülü
     public double HaversineKm(double lat1, double lng1, double lat2, double lng2)
     {
         const double R = 6371.0;
-        double dLat = ToRad(lat2 - lat1);
-        double dLng = ToRad(lng2 - lng1);
-        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
-                 + Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2))
-                 * Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
-        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        return R * c;
-    }
+        double dLat = (lat2 - lat1) * Math.PI / 180.0;
+        double dLng = (lng2 - lng1) * Math.PI / 180.0;
 
-    private static double ToRad(double deg) => deg * Math.PI / 180.0;
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+                 + Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0)
+                 * Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+
+        return 2 * R * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+    }
 }

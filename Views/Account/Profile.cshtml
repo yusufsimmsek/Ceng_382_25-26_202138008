@@ -1,0 +1,105 @@
+@model Sofranet.Models.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="mb-4">Profilim</h2>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3">Hesap Bilgileri</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Ad Soyad</dt>
+                    <dd class="col-sm-9">@Model.FullName</dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">@Model.Email</dd>
+
+                    <dt class="col-sm-3">Telefon</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Phone) ? "-" : Model.Phone)</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3">Adres</h5>
+                <form asp-action="UpdateAddress" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <textarea name="address" class="form-control" rows="3" placeholder="Adresin">@Model.Address</textarea>
+                        <small class="text-muted">Adres güncellenince konum otomatik aranır (Google Maps key gerekli).</small>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">Adresi Güncelle</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3">Konum</h5>
+                @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                {
+                    <p class="mb-2">
+                        <strong>Enlem:</strong> @Model.Latitude.Value.ToString("F6") &nbsp;
+                        <strong>Boylam:</strong> @Model.Longitude.Value.ToString("F6")
+                    </p>
+                }
+                else
+                {
+                    <p class="text-muted mb-2">Henüz konum kayıtlı değil.</p>
+                }
+
+                <form id="locationForm" asp-action="UpdateLocation" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="latInput" name="latitude" />
+                    <input type="hidden" id="lngInput" name="longitude" />
+                    <button type="button" id="locateBtn" class="btn btn-outline-primary">
+                        Konumumu Belirle (GPS)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3">Güvenlik</h5>
+                <p class="mb-1">İki adımlı doğrulama:
+                    <span class="badge bg-secondary">@(Model.TwoFactorEnabled ? "Aktif" : "Pasif")</span>
+                </p>
+                <small class="text-muted">2FA ayarları yakında.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        var btn = document.getElementById('locateBtn');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                alert('Tarayıcın konum desteklemiyor');
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = 'Konum alınıyor...';
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    document.getElementById('latInput').value = pos.coords.latitude;
+                    document.getElementById('lngInput').value = pos.coords.longitude;
+                    document.getElementById('locationForm').submit();
+                },
+                function (err) {
+                    alert('Konum alınamadı: ' + err.message);
+                    btn.disabled = false;
+                    btn.textContent = 'Konumumu Belirle (GPS)';
+                }
+            );
+        });
+    })();
+</script>
+}

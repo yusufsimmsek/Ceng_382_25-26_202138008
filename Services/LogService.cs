@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using Sofranet.Data;
 using Sofranet.Models;
@@ -6,33 +7,43 @@ namespace Sofranet.Services;
 
 public class LogService : ILogService
 {
-    private readonly ApplicationDbContext _db;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<LogService> _logger;
 
-    public LogService(ApplicationDbContext db, ILogger<LogService> logger)
+    public LogService(IServiceScopeFactory scopeFactory, ILogger<LogService> logger)
     {
-        _db = db;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
-    public async Task LogAsync(string action, string details, string? userId = null, string? ipAddress = null)
+    public async Task LogAsync(HttpContext? ctx, string action, string details = "", string? userIdOverride = null)
     {
         try
         {
-            var entry = new LogEntry
+            using var scope = _scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            string? userId = userIdOverride;
+            if (userId == null && ctx?.User?.Identity?.IsAuthenticated == true)
             {
-                Action = action,
-                Details = details ?? string.Empty,
+                userId = ctx.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+
+            var ip = ctx?.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
+
+            db.LogEntries.Add(new LogEntry
+            {
                 UserId = userId,
-                IpAddress = ipAddress ?? string.Empty,
+                Action = action,
+                Details = details.Length > 1000 ? details.Substring(0, 1000) : details,
+                IpAddress = ip,
                 CreatedAt = DateTime.UtcNow
-            };
-            _db.LogEntries.Add(entry);
-            await _db.SaveChangesAsync();
+            });
+            await db.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Log kaydı yazılamadı: {Action}", action);
+            _logger.LogError(ex, "Log kaydi basarisiz: {Action}", action);
         }
     }
 }

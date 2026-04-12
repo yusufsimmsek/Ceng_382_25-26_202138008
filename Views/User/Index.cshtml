@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Panelim";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <h2 class="mb-2">Hoş geldin, @User.Identity?.Name</h2>
+        <p class="text-muted">Buradan menülere göz atabilir, siparişlerini takip edebilirsin.</p>
+
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <a asp-controller="Menu" asp-action="Index" class="btn btn-primary w-100 py-3">
+                    Menülere Göz At
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-primary w-100 py-3">
+                    Sepetim
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Order" asp-action="MyOrders" class="btn btn-outline-primary w-100 py-3">
+                    Siparişlerim
+                </a>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+        <small class="text-muted">Detaylı dashboard yakında.</small>
+    </div>
+</div>
