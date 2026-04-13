@@ -39,7 +39,7 @@ cp .env.example .env
 # PostgreSQL'de veritabanını oluştur
 createdb sofranet
 psql sofranet < database/schema.sql
-psql sofranet < database/seed.sql
+# psql sofranet < database/seed.sql   # seed.sql ilerleyen fazlarda eklenecek
 
 # Uygulamayı çalıştır
 npm start
