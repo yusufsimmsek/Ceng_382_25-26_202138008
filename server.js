@@ -11,6 +11,8 @@ const expressLayouts = require('express-ejs-layouts');
 const sessionConfig = require('./config/session');
 require('./config/db'); // baglanti testi icin require yeterli
 
+const authRoutes = require('./routes/auth');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -57,6 +59,8 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.render('home', { title: 'Anasayfa' });
 });
+
+app.use('/', authRoutes);
 
 // 404
 app.use((req, res) => {

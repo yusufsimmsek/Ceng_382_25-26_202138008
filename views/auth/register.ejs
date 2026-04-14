@@ -1,0 +1,77 @@
+<div class="row justify-content-center">
+  <div class="col-12" style="max-width: 500px;">
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body p-4">
+        <h2 class="text-center mb-4">Hesap Oluştur</h2>
+
+        <form action="/register" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Ad Soyad</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label">Telefon <span class="text-muted small">(opsiyonel)</span></label>
+            <input type="text" name="phone" id="phone" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Şifre</label>
+            <input type="password" name="password" id="password" class="form-control" minlength="6" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="password_confirm" class="form-label">Şifre Tekrar</label>
+            <input type="password" name="password_confirm" id="password_confirm" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label d-block">Hesap tipi</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="role" id="role-user" value="user" checked>
+              <label class="form-check-label" for="role-user">Kullanıcı</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="role" id="role-caterer" value="caterer">
+              <label class="form-check-label" for="role-caterer">Caterer</label>
+            </div>
+          </div>
+
+          <div class="mb-3" id="address-wrap" style="display: none;">
+            <label for="address" class="form-label">Restoran Adresi</label>
+            <textarea name="address" id="address" class="form-control" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Kayıt Ol</button>
+        </form>
+
+        <p class="text-center mt-3 mb-0 small">
+          Zaten hesabın var mı? <a href="/login">Giriş yap</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // caterer secilirse adres alani gozuksun
+  (function(){
+    var radios = document.querySelectorAll('input[name="role"]');
+    var addr = document.getElementById('address-wrap');
+    function toggle() {
+      var checked = document.querySelector('input[name="role"]:checked');
+      if (checked && checked.value === 'caterer') {
+        addr.style.display = 'block';
+      } else {
+        addr.style.display = 'none';
+      }
+    }
+    radios.forEach(function(r){ r.addEventListener('change', toggle); });
+    toggle();
+  })();
+</script>
