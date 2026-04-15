@@ -143,6 +143,49 @@ a:hover {
     box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
 }
 
+/* Caterer menu customize */
+.option-group-card {
+    margin-bottom: 16px;
+    border-left: 3px solid var(--sofra-primary) !important;
+    border-radius: 8px;
+}
+.removable-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    background: #f0e6db;
+    color: #2B2B2B;
+    border-radius: 14px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+.removable-tag form {
+    display: inline;
+    margin: 0;
+}
+.inline-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.menu-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.badge-active {
+    background-color: #28a745;
+    color: white;
+}
+.badge-inactive {
+    background-color: #95a5a6;
+    color: white;
+}
+
 /* Auth pages (login/register) */
 body.auth-page {
     background: linear-gradient(135deg, #FFF8F0 0%, #FFE3D5 100%);

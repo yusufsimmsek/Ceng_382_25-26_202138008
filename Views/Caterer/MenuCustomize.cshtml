@@ -1,0 +1,155 @@
+@model Sofranet.Models.MenuItem
+@{
+    ViewData["Title"] = $"{Model.Name} - Seçenekler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <img src="@(Model.ImagePath ?? "/images/no-image.svg")"
+             style="width:60px;height:60px;object-fit:cover;border-radius:8px;" alt="" />
+        <div>
+            <h2 class="mb-0">@Model.Name</h2>
+            <small class="text-muted">₺@Model.Price.ToString("0.00")</small>
+        </div>
+    </div>
+    <a asp-action="Menu" class="btn btn-link text-muted">← Menüye Dön</a>
+</div>
+
+<!-- BÖLÜM 1: Seçenek Grupları -->
+<section class="mb-5">
+    <h4 class="mb-2">Seçenek Grupları</h4>
+    <p class="text-muted small">
+        Müşterinin sipariş verirken seçeceği opsiyonel veya zorunlu seçim grupları (örn: Boyut, Sos).
+    </p>
+
+    @foreach (var group in Model.OptionGroups)
+    {
+        <div class="card option-group-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <strong>@group.Name</strong>
+                        @if (group.IsRequired)
+                        {
+                            <span class="badge bg-warning text-dark ms-1">Zorunlu</span>
+                        }
+                        <small class="text-muted ms-2">min: @group.MinSelect, max: @group.MaxSelect</small>
+                    </div>
+                    <form asp-action="OptionGroupDelete" method="post" class="d-inline"
+                          onsubmit="return confirm('Bu grubu ve tüm seçeneklerini silmek istediğine emin misin?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="groupId" value="@group.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Grubu Sil</button>
+                    </form>
+                </div>
+
+                @if (group.Options.Any())
+                {
+                    <table class="table table-sm mb-2">
+                        <thead>
+                            <tr>
+                                <th>Seçenek</th>
+                                <th style="width:140px;">Ek Fiyat</th>
+                                <th style="width:80px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var opt in group.Options)
+                        {
+                            <tr>
+                                <td>@opt.Name</td>
+                                <td>@(opt.ExtraPrice > 0 ? $"+₺{opt.ExtraPrice:0.00}" : "₺0,00")</td>
+                                <td class="text-end">
+                                    <form asp-action="OptionDelete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="optionId" value="@opt.Id" />
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0">Sil</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted small mb-2">Henüz seçenek yok.</p>
+                }
+
+                <form asp-action="OptionCreate" method="post" class="inline-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="groupId" value="@group.Id" />
+                    <input type="text" name="name" class="form-control form-control-sm" placeholder="Seçenek ismi" required />
+                    <input type="number" name="extraPrice" step="0.01" min="0" value="0" class="form-control form-control-sm" style="max-width:140px;" />
+                    <button type="submit" class="btn btn-sm btn-primary">Seçenek Ekle</button>
+                </form>
+            </div>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h6 class="mb-3">Yeni Grup Ekle</h6>
+            <form asp-action="OptionGroupCreate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="menuItemId" value="@Model.Id" />
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" name="name" class="form-control" placeholder="Grup ismi (örn: Boyut)" required />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="minSelect" value="0" min="0" class="form-control" placeholder="Min" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="maxSelect" value="1" min="1" class="form-control" placeholder="Max" />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox" name="isRequired" value="true" class="form-check-input" id="isRequired" />
+                            <label for="isRequired" class="form-check-label">Zorunlu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Grup Ekle</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- BÖLÜM 2: Çıkarılabilir Malzemeler -->
+<section>
+    <h4 class="mb-2">Çıkarılabilir Malzemeler</h4>
+    <p class="text-muted small">
+        Müşterinin sipariş verirken çıkartabileceği malzemeler (örn: Soğan).
+    </p>
+
+    <div class="mb-3">
+        @if (Model.RemovableIngredients.Any())
+        {
+            foreach (var rem in Model.RemovableIngredients)
+            {
+                <span class="removable-tag">
+                    @rem.Name
+                    <form asp-action="RemovableDelete" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="removableId" value="@rem.Id" />
+                        <button type="submit" class="btn btn-sm p-0 ms-1 text-danger" style="border:none;background:none;line-height:1;">×</button>
+                    </form>
+                </span>
+            }
+        }
+        else
+        {
+            <p class="text-muted small">Henüz malzeme eklenmemiş.</p>
+        }
+    </div>
+
+    <form asp-action="RemovableCreate" method="post" class="inline-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="menuItemId" value="@Model.Id" />
+        <input type="text" name="name" class="form-control" style="max-width:280px;" placeholder="Malzeme adı (örn: Soğan)" required />
+        <button type="submit" class="btn btn-primary">Ekle</button>
+    </form>
+</section>

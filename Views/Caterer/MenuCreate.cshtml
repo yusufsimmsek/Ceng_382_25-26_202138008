@@ -1,0 +1,58 @@
+@model Sofranet.Models.MenuItem
+@{
+    ViewData["Title"] = "Yeni Menü";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Yeni Menü Ekle</h2>
+            <a asp-action="Menu" class="btn btn-link text-muted">← Listeye Dön</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="MenuCreate" method="post" enctype="multipart/form-data" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small d-none-if-empty"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">İsim</label>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: Lahmacun" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Price" class="form-label">Fiyat (₺)</label>
+                            <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" rows="3" class="form-control"
+                                  placeholder="Kısa açıklama..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Görsel</label>
+                        <input type="file" name="image" accept="image/*" class="form-control" />
+                        <small class="text-muted">JPG, PNG veya WEBP. Max 5MB.</small>
+                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["image"]?.Errors?.Count > 0)
+                        {
+                            <div class="text-danger small">@ViewData.ModelState["image"]!.Errors[0].ErrorMessage</div>
+                        }
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a asp-action="Menu" class="btn btn-outline-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
