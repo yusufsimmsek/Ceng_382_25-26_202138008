@@ -12,6 +12,11 @@ const sessionConfig = require('./config/session');
 require('./config/db'); // baglanti testi icin require yeterli
 
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+const catererRoutes = require('./routes/caterer');
+const adminRoutes = require('./routes/admin');
+
+const { requireLogin, requireRole } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,6 +66,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/', authRoutes);
+app.use('/user', requireLogin, requireRole('user'), userRoutes);
+app.use('/caterer', requireLogin, requireRole('caterer'), catererRoutes);
+app.use('/admin', requireLogin, requireRole('admin'), adminRoutes);
 
 // 404
 app.use((req, res) => {
