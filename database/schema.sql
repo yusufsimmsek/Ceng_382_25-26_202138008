@@ -1,4 +1,4 @@
--- Sofranet schema - extended with order and rating tables
+-- Sofranet schema - users, menu, orders, ratings, logs + customization tables
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -94,3 +94,57 @@ CREATE TABLE logs (
 CREATE INDEX idx_logs_created ON logs(created_at);
 CREATE INDEX idx_logs_action ON logs(action);
 CREATE INDEX idx_logs_user ON logs(user_id);
+
+
+-- customization yapisi: option_groups -> options ve removable_ingredients
+
+CREATE TABLE option_groups (
+  id SERIAL PRIMARY KEY,
+  menu_item_id INTEGER REFERENCES menu_items(id) ON DELETE CASCADE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  is_required BOOLEAN DEFAULT FALSE,
+  min_select INTEGER DEFAULT 0,
+  max_select INTEGER DEFAULT 1,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_option_groups_menu ON option_groups(menu_item_id);
+
+
+CREATE TABLE options (
+  id SERIAL PRIMARY KEY,
+  group_id INTEGER REFERENCES option_groups(id) ON DELETE CASCADE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  extra_price NUMERIC(10, 2) DEFAULT 0
+);
+
+CREATE INDEX idx_options_group ON options(group_id);
+
+
+CREATE TABLE removable_ingredients (
+  id SERIAL PRIMARY KEY,
+  menu_item_id INTEGER REFERENCES menu_items(id) ON DELETE CASCADE NOT NULL,
+  name VARCHAR(100) NOT NULL
+);
+
+CREATE INDEX idx_removables_menu ON removable_ingredients(menu_item_id);
+
+
+-- siparis edilen item'in secimleri
+
+CREATE TABLE order_item_options (
+  id SERIAL PRIMARY KEY,
+  order_item_id INTEGER REFERENCES order_items(id) ON DELETE CASCADE NOT NULL,
+  option_id INTEGER REFERENCES options(id) NOT NULL
+);
+
+CREATE INDEX idx_order_item_options_item ON order_item_options(order_item_id);
+
+
+CREATE TABLE order_item_removals (
+  id SERIAL PRIMARY KEY,
+  order_item_id INTEGER REFERENCES order_items(id) ON DELETE CASCADE NOT NULL,
+  removable_ingredient_id INTEGER REFERENCES removable_ingredients(id) NOT NULL
+);
+
+CREATE INDEX idx_order_item_removals_item ON order_item_removals(order_item_id);
