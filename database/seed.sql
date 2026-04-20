@@ -43,17 +43,17 @@ INSERT INTO users (name, email, password_hash, phone, role, address, latitude, l
 
 -- Lezzet Mutfagi (caterer_id = 2)  ->  item id'leri 1,2,3,4
 INSERT INTO menu_items (caterer_id, name, price, description, image_path) VALUES
-(2, 'Lahmacun', 65.00, 'İnce hamur, taze kıyma harcı, fırından yeni', '/uploads/menu/placeholder.jpg'),
-(2, 'Adana Kebap', 220.00, 'Acılı, közlenmiş sebzelerle', '/uploads/menu/placeholder.jpg'),
-(2, 'Künefe', 95.00, 'Sıcak peynirli, antep fıstıklı', '/uploads/menu/placeholder.jpg'),
-(2, 'Mercimek Çorbası', 45.00, 'Geleneksel ev tarifi', '/uploads/menu/placeholder.jpg');
+(2, 'Lahmacun', 65.00, 'İnce hamur, taze kıyma harcı, fırından yeni', '/images/no-image.svg'),
+(2, 'Adana Kebap', 220.00, 'Acılı, közlenmiş sebzelerle', '/images/no-image.svg'),
+(2, 'Künefe', 95.00, 'Sıcak peynirli, antep fıstıklı', '/images/no-image.svg'),
+(2, 'Mercimek Çorbası', 45.00, 'Geleneksel ev tarifi', '/images/no-image.svg');
 
 -- Mahalle Sofrasi (caterer_id = 3)  ->  item id'leri 5,6,7,8
 INSERT INTO menu_items (caterer_id, name, price, description, image_path) VALUES
-(3, 'İskender', 280.00, 'Yoğurtlu, tereyağlı sosla', '/uploads/menu/placeholder.jpg'),
-(3, 'Mantı', 150.00, 'Kayseri usulü, yoğurtlu sarımsaklı', '/uploads/menu/placeholder.jpg'),
-(3, 'Pide (Kıymalı)', 120.00, 'Açık tepsi, taze kıyma', '/uploads/menu/placeholder.jpg'),
-(3, 'Ayran', 25.00, 'Soğuk, evde yapım', '/uploads/menu/placeholder.jpg');
+(3, 'İskender', 280.00, 'Yoğurtlu, tereyağlı sosla', '/images/no-image.svg'),
+(3, 'Mantı', 150.00, 'Kayseri usulü, yoğurtlu sarımsaklı', '/images/no-image.svg'),
+(3, 'Pide (Kıymalı)', 120.00, 'Açık tepsi, taze kıyma', '/images/no-image.svg'),
+(3, 'Ayran', 25.00, 'Soğuk, evde yapım', '/images/no-image.svg');
 
 
 -- ============================

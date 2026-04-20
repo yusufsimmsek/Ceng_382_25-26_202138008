@@ -146,6 +146,27 @@ main {
   font-weight: 600;
 }
 
+/* menu listesi */
+.menu-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.badge-active {
+  background-color: #27ae60;
+  color: white;
+}
+.badge-inactive {
+  background-color: #95a5a6;
+  color: white;
+}
+.empty-state {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
 /* footer */
 .site-footer {
   background-color: #2B2B2B;
