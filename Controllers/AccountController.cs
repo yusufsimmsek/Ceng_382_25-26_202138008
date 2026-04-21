@@ -195,7 +195,7 @@ public class AccountController : Controller
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateLocation(double latitude, double longitude)
+    public async Task<IActionResult> UpdateLocation(double latitude, double longitude, string? returnUrl = null)
     {
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
         {
@@ -220,6 +220,10 @@ public class AccountController : Controller
         {
             TempData["ErrorMessage"] = "Konum güncellenemedi";
         }
+
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
         return RedirectToAction(nameof(Profile));
     }
 

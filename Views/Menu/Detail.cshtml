@@ -185,6 +185,38 @@
     }
 </section>
 
+<hr class="my-4" />
+
+<section>
+    <h4 class="mb-3">Restoran Konumu</h4>
+    @if (Model.CatererLat.HasValue && Model.CatererLng.HasValue)
+    {
+        <div id="menuDetailMap"
+             style="width:100%;height:280px;border-radius:8px;"
+             data-lat="@Model.CatererLat.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+             data-lng="@Model.CatererLng.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+             data-name="@Model.CatererName"></div>
+    }
+    else
+    {
+        <div class="text-muted"><small>Bu restoranın konum bilgisi henüz yok.</small></div>
+    }
+</section>
+
 @section Scripts {
     <script src="~/js/menu-detail.js" asp-append-version="true"></script>
+    @{ var mapsKey = ViewBag.GoogleMapsKey as string; }
+    @if (Model.CatererLat.HasValue && Model.CatererLng.HasValue)
+    {
+        if (!string.IsNullOrEmpty(mapsKey))
+        {
+            <script src="~/js/maps.js" asp-append-version="true"></script>
+            <script async defer src="https://maps.googleapis.com/maps/api/js?key=@mapsKey&callback=initMaps"></script>
+        }
+        else
+        {
+            <script>window.GMAPS_DISABLED = true;</script>
+            <script src="~/js/maps.js" asp-append-version="true"></script>
+        }
+    }
 }

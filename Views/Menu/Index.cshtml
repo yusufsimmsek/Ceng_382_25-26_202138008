@@ -8,6 +8,13 @@
     var currentPage = (int)(ViewBag.CurrentPage ?? 1);
     var totalPages = (int)(ViewBag.TotalPages ?? 1);
     var total = (int)(ViewBag.Total ?? 0);
+
+    var isUserRole = (bool)(ViewBag.IsUserRole ?? false);
+    var locationAvailable = (bool)(ViewBag.LocationAvailable ?? false);
+    var radiusVal = (int)(ViewBag.Radius ?? 10);
+    var distances = (Dictionary<string, double>)(ViewBag.CatererDistances ?? new Dictionary<string, double>());
+    var needsMaps = (bool)(ViewBag.NeedsMaps ?? false);
+    var mapsKey = ViewBag.GoogleMapsKey as string;
 }
 
 @functions {
@@ -28,8 +35,45 @@
     </div>
 </div>
 
+@if (isUserRole)
+{
+    if (!locationAvailable)
+    {
+        <div class="location-banner-warn">
+            <strong>📍 Konumun belirli değil</strong> — Yakındaki restoranları görmek için konumunu belirle.
+            <form method="post" asp-controller="Account" asp-action="UpdateLocation" class="d-inline" id="quickLocateForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="latitude" id="quickLat" />
+                <input type="hidden" name="longitude" id="quickLng" />
+                <input type="hidden" name="returnUrl" value="/Menu" />
+                <button type="button" id="quickLocateBtn" class="btn btn-warning btn-sm ms-2">Konumumu Belirle</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="location-banner-ok">
+            <strong>✓ Konumun belirli</strong> — yakındaki restoranlar gösteriliyor.
+            <form method="get" class="d-inline ms-2">
+                <input type="hidden" name="caterer" value="@selectedCaterer" />
+                <input type="hidden" name="minPrice" value="@(minPrice?.ToString("0.##"))" />
+                <input type="hidden" name="maxPrice" value="@(maxPrice?.ToString("0.##"))" />
+                <label class="me-1">Yarıçap:</label>
+                <select name="radius" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block" style="width:auto;">
+                    <option value="5" selected="@(radiusVal == 5)">5 km</option>
+                    <option value="10" selected="@(radiusVal == 10)">10 km</option>
+                    <option value="20" selected="@(radiusVal == 20)">20 km</option>
+                    <option value="50" selected="@(radiusVal == 50)">50 km</option>
+                </select>
+            </form>
+            <a href="/Account/Profile" class="ms-2 small">Konumu güncelle</a>
+        </div>
+    }
+}
+
 <div class="filter-bar">
     <form method="get" asp-action="Index" class="row g-2 align-items-end">
+        <input type="hidden" name="radius" value="@radiusVal" />
         <div class="col-md-4">
             <label class="form-label small mb-1">Restoran</label>
             <select name="caterer" class="form-select">
@@ -62,11 +106,37 @@
     </form>
 </div>
 
+@if (needsMaps)
+{
+    <div class="mb-3">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mapCollapse">
+            🗺️ Haritada Göster
+        </button>
+    </div>
+    <div class="collapse mb-3" id="mapCollapse">
+        <div id="menuListMap"
+             style="width:100%;height:400px;border-radius:8px;"
+             data-user-lat="@(ViewBag.UserLat?.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+             data-user-lng="@(ViewBag.UserLng?.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+             data-caterers='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.MapCaterers))'></div>
+    </div>
+}
+
 @if (Model.Count == 0)
 {
     <div class="text-center py-5 text-muted">
         <div style="font-size:3rem;">🍽️</div>
-        <p>Bu kriterlere uygun menü yok.</p>
+        <p>
+            @if (isUserRole && locationAvailable)
+            {
+                <text>Bu yarıçap içinde menü yok. Yarıçapı genişletmeyi dene.</text>
+            }
+            else
+            {
+                <text>Bu kriterlere uygun menü yok.</text>
+            }
+        </p>
     </div>
 }
 else
@@ -81,6 +151,12 @@ else
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title mb-1">@item.Name</h5>
                         <div class="caterer-name">@vm.CatererName</div>
+
+                        @if (distances.ContainsKey(item.CatererId))
+                        {
+                            <span class="distance-badge mt-1">📍 @distances[item.CatererId].ToString("0.0") km</span>
+                        }
+
                         <div class="price my-2">₺@item.Price.ToString("0.00")</div>
 
                         @if (vm.MenuAvg.HasValue)
@@ -127,6 +203,7 @@ else
                            asp-route-caterer="@selectedCaterer"
                            asp-route-minPrice="@minPrice"
                            asp-route-maxPrice="@maxPrice"
+                           asp-route-radius="@radiusVal"
                            asp-route-page="@(currentPage - 1)">Önceki</a>
                     </li>
                 }
@@ -138,10 +215,53 @@ else
                            asp-route-caterer="@selectedCaterer"
                            asp-route-minPrice="@minPrice"
                            asp-route-maxPrice="@maxPrice"
+                           asp-route-radius="@radiusVal"
                            asp-route-page="@(currentPage + 1)">Sonraki</a>
                     </li>
                 }
             </ul>
         </nav>
     }
+}
+
+@section Scripts {
+    @if (needsMaps)
+    {
+        if (!string.IsNullOrEmpty(mapsKey))
+        {
+            <script src="~/js/maps.js" asp-append-version="true"></script>
+            <script async defer src="https://maps.googleapis.com/maps/api/js?key=@mapsKey&callback=initMaps"></script>
+        }
+        else
+        {
+            <script>window.GMAPS_DISABLED = true;</script>
+            <script src="~/js/maps.js" asp-append-version="true"></script>
+        }
+    }
+    <script>
+        (function () {
+            var btn = document.getElementById('quickLocateBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                if (!navigator.geolocation) {
+                    alert('Tarayıcın konum desteklemiyor');
+                    return;
+                }
+                btn.textContent = 'Alınıyor...';
+                btn.disabled = true;
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        document.getElementById('quickLat').value = pos.coords.latitude;
+                        document.getElementById('quickLng').value = pos.coords.longitude;
+                        document.getElementById('quickLocateForm').submit();
+                    },
+                    function (err) {
+                        alert('Konum alınamadı: ' + err.message);
+                        btn.textContent = 'Konumumu Belirle';
+                        btn.disabled = false;
+                    }
+                );
+            });
+        })();
+    </script>
 }
