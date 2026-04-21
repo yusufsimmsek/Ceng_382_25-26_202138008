@@ -161,6 +161,10 @@ main {
   background-color: #95a5a6;
   color: white;
 }
+tr.inactive {
+  background-color: #f8f9fa;
+  opacity: 0.75;
+}
 .empty-state {
   background: white;
   border-radius: 12px;

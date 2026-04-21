@@ -13,5 +13,8 @@ router.get('/dashboard', catererController.dashboard);
 router.get('/menu', catererController.menuList);
 router.get('/menu/new', catererController.menuNewForm);
 router.post('/menu', upload.single('image'), catererController.menuCreate);
+router.get('/menu/:id/edit', catererController.menuEditForm);
+router.put('/menu/:id', upload.single('image'), catererController.menuUpdate);
+router.delete('/menu/:id', catererController.menuDelete);
 
 module.exports = router;

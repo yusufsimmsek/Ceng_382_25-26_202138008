@@ -23,7 +23,7 @@
         </thead>
         <tbody>
           <% items.forEach(function(it){ %>
-            <tr>
+            <tr class="<%= it.is_available ? '' : 'inactive' %>">
               <td>
                 <img src="<%= it.image_path || '/images/no-image.svg' %>"
                      alt="<%= it.name %>" class="menu-thumb">
@@ -39,10 +39,12 @@
               </td>
               <td class="text-end">
                 <a href="/caterer/menu/<%= it.id %>/edit" class="btn btn-sm btn-outline-secondary">Düzenle</a>
-                <form action="/caterer/menu/<%= it.id %>?_method=DELETE" method="POST" class="d-inline"
-                      onsubmit="return confirm('Bu menüyü silmek istediğine emin misin?');">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
-                </form>
+                <% if (it.is_available) { %>
+                  <form action="/caterer/menu/<%= it.id %>?_method=DELETE" method="POST" class="d-inline"
+                        onsubmit="return confirm('Bu menüyü pasif yapmak istediğine emin misin?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                  </form>
+                <% } %>
               </td>
             </tr>
           <% }) %>
