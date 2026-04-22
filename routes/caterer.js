@@ -17,4 +17,13 @@ router.get('/menu/:id/edit', catererController.menuEditForm);
 router.put('/menu/:id', upload.single('image'), catererController.menuUpdate);
 router.delete('/menu/:id', catererController.menuDelete);
 
+// customization
+router.get('/menu/:id/customize', catererController.menuCustomize);
+router.post('/menu/:id/option-groups', catererController.optionGroupCreate);
+router.post('/menu/:id/option-groups/:groupId/delete', catererController.optionGroupDelete);
+router.post('/menu/:id/option-groups/:groupId/options', catererController.optionCreate);
+router.post('/menu/:id/options/:optionId/delete', catererController.optionDelete);
+router.post('/menu/:id/removables', catererController.removableCreate);
+router.post('/menu/:id/removables/:removableId/delete', catererController.removableDelete);
+
 module.exports = router;

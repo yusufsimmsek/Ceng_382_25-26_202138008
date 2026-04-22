@@ -1,0 +1,158 @@
+<div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+  <div class="d-flex align-items-center">
+    <img src="<%= item.image_path || '/images/no-image.svg' %>"
+         alt="<%= item.name %>"
+         style="width:56px; height:56px; object-fit:cover; border-radius:6px; margin-right:14px;">
+    <div>
+      <h3 class="mb-0">Seçenekleri Yönet</h3>
+      <div class="text-muted small">
+        <%= item.name %> - ₺<%= Number(item.price).toFixed(2) %>
+      </div>
+    </div>
+  </div>
+  <a href="/caterer/menu" class="btn btn-outline-secondary">Menüye Dön</a>
+</div>
+
+<!-- ===== Secenek Gruplari ===== -->
+<section class="mt-4">
+  <h4>Seçenek Grupları</h4>
+  <p class="text-muted small">
+    Müşterinin sipariş verirken seçeceği opsiyonel veya zorunlu seçim grupları
+    (örn: Boyut, Sos, Pilav).
+  </p>
+
+  <% if (!groups || groups.length === 0) { %>
+    <div class="text-muted small mb-3"><em>Henüz seçenek grubu yok.</em></div>
+  <% } else { %>
+    <% groups.forEach(function(g){ %>
+      <div class="card option-group-card mb-3 shadow-sm border-0">
+        <div class="card-header d-flex justify-content-between align-items-center bg-white">
+          <div>
+            <strong><%= g.name %></strong>
+            <% if (g.is_required) { %>
+              <span class="badge bg-warning text-dark ms-2">Zorunlu</span>
+            <% } %>
+            <span class="text-muted small ms-2">
+              min: <%= g.min_select %>, max: <%= g.max_select %>
+            </span>
+          </div>
+          <form action="/caterer/menu/<%= item.id %>/option-groups/<%= g.id %>/delete"
+                method="POST" class="m-0"
+                onsubmit="return confirm('Bu grubu ve içindeki tüm seçenekleri silmek istiyor musun?');">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Grubu Sil</button>
+          </form>
+        </div>
+        <div class="card-body">
+
+          <% if (g.options && g.options.length > 0) { %>
+            <table class="table table-sm align-middle mb-2">
+              <thead>
+                <tr>
+                  <th>Seçenek</th>
+                  <th>Ek Fiyat</th>
+                  <th class="text-end"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% g.options.forEach(function(o){ %>
+                  <tr>
+                    <td><%= o.name %></td>
+                    <td>₺<%= Number(o.extra_price).toFixed(2) %></td>
+                    <td class="text-end">
+                      <form action="/caterer/menu/<%= item.id %>/options/<%= o.id %>/delete"
+                            method="POST" class="m-0 d-inline"
+                            onsubmit="return confirm('Bu seçeneği silmek istiyor musun?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">x</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <div class="text-muted small mb-2"><em>Bu grupta henüz seçenek yok.</em></div>
+          <% } %>
+
+          <form action="/caterer/menu/<%= item.id %>/option-groups/<%= g.id %>/options"
+                method="POST" class="inline-form">
+            <input type="text" name="name" class="form-control form-control-sm"
+                   placeholder="Seçenek adı" required>
+            <input type="number" name="extra_price" class="form-control form-control-sm"
+                   placeholder="Ek fiyat" step="0.01" min="0" value="0" style="max-width:130px;" required>
+            <button type="submit" class="btn btn-sm btn-primary">Ekle</button>
+          </form>
+
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+
+  <!-- yeni grup ekle -->
+  <div class="card shadow-sm border-0 mt-3">
+    <div class="card-body">
+      <h6 class="mb-3">Yeni Grup Ekle</h6>
+      <form action="/caterer/menu/<%= item.id %>/option-groups" method="POST">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Grup Adı</label>
+            <input type="text" name="name" class="form-control" placeholder="örn: Boyut" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Min Seçim</label>
+            <input type="number" name="min_select" class="form-control" min="0" value="0">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Max Seçim</label>
+            <input type="number" name="max_select" class="form-control" min="1" value="1">
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="is_required" id="is_required">
+              <label class="form-check-label" for="is_required">Zorunlu</label>
+            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Grup Ekle</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Cikarilabilir Malzemeler ===== -->
+<section class="mt-5">
+  <h4>Çıkarılabilir Malzemeler</h4>
+  <p class="text-muted small">
+    Müşterinin sipariş verirken çıkartabileceği malzemeler (örn: Soğan, Maydanoz).
+  </p>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+
+      <% if (!removables || removables.length === 0) { %>
+        <div class="text-muted small mb-3"><em>Henüz çıkarılabilir malzeme yok.</em></div>
+      <% } else { %>
+        <div class="mb-3">
+          <% removables.forEach(function(r){ %>
+            <span class="removable-tag">
+              <%= r.name %>
+              <form action="/caterer/menu/<%= item.id %>/removables/<%= r.id %>/delete"
+                    method="POST"
+                    onsubmit="return confirm('Bu malzemeyi silmek istiyor musun?');">
+                <button type="submit" class="btn btn-link p-0 text-danger" style="text-decoration:none;">x</button>
+              </form>
+            </span>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <form action="/caterer/menu/<%= item.id %>/removables" method="POST" class="inline-form">
+        <input type="text" name="name" class="form-control form-control-sm"
+               placeholder="örn: Soğan" required>
+        <button type="submit" class="btn btn-sm btn-primary">Ekle</button>
+      </form>
+
+    </div>
+  </div>
+</section>

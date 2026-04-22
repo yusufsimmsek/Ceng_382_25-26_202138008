@@ -165,6 +165,31 @@ tr.inactive {
   background-color: #f8f9fa;
   opacity: 0.75;
 }
+
+/* customization sayfasi */
+.option-group-card {
+  border-left: 3px solid var(--primary) !important;
+}
+.removable-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+.removable-tag form {
+  display: inline;
+  margin-left: 4px;
+}
+.inline-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
 .empty-state {
   background: white;
   border-radius: 12px;

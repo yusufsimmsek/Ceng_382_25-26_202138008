@@ -38,6 +38,7 @@
                 <% } %>
               </td>
               <td class="text-end">
+                <a href="/caterer/menu/<%= it.id %>/customize" class="btn btn-sm btn-outline-primary">Seçenekler</a>
                 <a href="/caterer/menu/<%= it.id %>/edit" class="btn btn-sm btn-outline-secondary">Düzenle</a>
                 <% if (it.is_available) { %>
                   <form action="/caterer/menu/<%= it.id %>?_method=DELETE" method="POST" class="d-inline"
