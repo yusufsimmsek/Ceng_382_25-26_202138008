@@ -12,6 +12,7 @@ const sessionConfig = require('./config/session');
 require('./config/db'); // baglanti testi icin require yeterli
 
 const authRoutes = require('./routes/auth');
+const menuRoutes = require('./routes/menu');
 const userRoutes = require('./routes/user');
 const catererRoutes = require('./routes/caterer');
 const adminRoutes = require('./routes/admin');
@@ -66,6 +67,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/', authRoutes);
+app.use('/', menuRoutes);
 app.use('/user', requireLogin, requireRole('user'), userRoutes);
 app.use('/caterer', requireLogin, requireRole('caterer'), catererRoutes);
 app.use('/admin', requireLogin, requireRole('admin'), adminRoutes);
