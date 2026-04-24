@@ -1,0 +1,104 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Ödeme";
+}
+
+<h2 class="mb-4">Ödeme</h2>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="alert alert-info py-2">
+            <strong>Bu sayfa bir simülasyondur.</strong> Gerçek kart bilgisi <u>girme</u>.
+            Test için <code>4242 4242 4242 4242</code> kullanabilirsin. Sonu <code>0000</code> olan kartlar reddedilir.
+        </div>
+
+        <form asp-action="Checkout" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3">Kart Bilgileri</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="CardName" class="form-label"></label>
+                        <input asp-for="CardName" class="form-control" placeholder="AD SOYAD" />
+                        <span asp-validation-for="CardName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CardNumber" class="form-label"></label>
+                        <input asp-for="CardNumber" class="form-control" inputmode="numeric"
+                               placeholder="1234 5678 9012 3456" id="cardNumberInput" />
+                        <span asp-validation-for="CardNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label asp-for="CardExpiry" class="form-label"></label>
+                            <input asp-for="CardExpiry" class="form-control" placeholder="MM/YY"
+                                   id="cardExpiryInput" maxlength="5" />
+                            <span asp-validation-for="CardExpiry" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label asp-for="CardCvv" class="form-label"></label>
+                            <input asp-for="CardCvv" class="form-control" inputmode="numeric" maxlength="4" />
+                            <span asp-validation-for="CardCvv" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3">Teslimat Adresi</h5>
+                    <div class="form-check mb-2">
+                        <input asp-for="UseProfileAddress" class="form-check-input" id="useProfileAddr" />
+                        <label class="form-check-label" for="useProfileAddr">Profil adresimi kullan</label>
+                    </div>
+                    <div class="mb-3" id="profileAddrPreview">
+                        <small class="text-muted">@(string.IsNullOrWhiteSpace(Model.UserAddress) ? "Profil adresi yok - manuel adres gir" : Model.UserAddress)</small>
+                    </div>
+                    <div class="mb-3" id="manualAddrGroup" style="display:none;">
+                        <label asp-for="ManualAddress" class="form-label">Manuel Adres</label>
+                        <textarea asp-for="ManualAddress" class="form-control" rows="2"
+                                  placeholder="Tam adres - mahalle, sokak, kapı no"></textarea>
+                        <span asp-validation-for="ManualAddress" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">Ödemeyi Onayla</button>
+        </form>
+    </div>
+
+    <div class="col-md-5">
+        <div class="checkout-summary">
+            <h5 class="mb-2">Sipariş Özeti</h5>
+            <div class="text-muted mb-3 small">@Model.CatererName</div>
+            @foreach (var item in Model.Items)
+            {
+                <div class="checkout-summary-item">
+                    <div class="d-flex justify-content-between">
+                        <span>@item.Quantity × @item.Name</span>
+                        <span>₺@item.Subtotal.ToString("0.00")</span>
+                    </div>
+                    @if (item.Options.Any())
+                    {
+                        <small class="text-muted">@string.Join(", ", item.Options.Select(o => o.OptionName))</small>
+                    }
+                </div>
+            }
+            <hr />
+            <div class="d-flex justify-content-between" style="font-size:1.25rem;font-weight:600;color:var(--sofra-primary);">
+                <span>Toplam:</span>
+                <span>₺@Model.Total.ToString("0.00")</span>
+            </div>
+            <a asp-action="Index" class="btn btn-link mt-3 px-0">← Sepete Geri Dön</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/checkout.js" asp-append-version="true"></script>
+}

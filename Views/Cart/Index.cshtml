@@ -1,0 +1,92 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Sepetim";
+}
+
+<h2 class="mb-4">Sepetim</h2>
+
+@if (Model.PendingItem != null)
+{
+    <div class="alert alert-warning">
+        <strong>Sepetinde başka bir restoranın ürünleri var.</strong><br />
+        Yeni ürünü (<strong>@Model.PendingItemName</strong>) eklemek için mevcut sepeti temizlemen gerekiyor.
+        <div class="mt-2 d-flex gap-2 flex-wrap">
+            <form asp-action="ConfirmReplace" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-warning">Sepeti Temizle ve Yeni Ürünü Ekle</button>
+            </form>
+            <form asp-action="CancelPending" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-secondary">Vazgeç</button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (Model.Items.Count == 0)
+{
+    <div class="empty-state text-center py-5">
+        <div style="font-size:4rem;">🛒</div>
+        <p class="lead mt-3">Sepetin boş</p>
+        <a asp-controller="Menu" asp-action="Index" class="btn btn-primary">Menülere göz at</a>
+    </div>
+}
+else
+{
+    <h5 class="mb-3 text-muted">Sipariş: @Model.CatererName</h5>
+
+    @foreach (var item in Model.Items)
+    {
+        <div class="cart-row d-flex align-items-start p-3 mb-2">
+            <img src="@(item.ImagePath ?? "/images/no-image.svg")" class="cart-thumb me-3" alt="" />
+            <div class="flex-grow-1">
+                <h5 class="mb-1">@item.Name</h5>
+                @if (item.Options.Any())
+                {
+                    <small class="text-muted d-block">
+                        @foreach (var opt in item.Options)
+                        {
+                            <span>@opt.GroupName: <strong>@opt.OptionName</strong>@if (opt.ExtraPrice > 0)
+                            {<text> (+₺@opt.ExtraPrice.ToString("0.00"))</text>}</span><br />
+                        }
+                    </small>
+                }
+                @if (item.Removals.Any())
+                {
+                    <small class="text-muted d-block">Çıkarıldı: @string.Join(", ", item.Removals)</small>
+                }
+                <form asp-action="Update" method="post" class="d-inline mt-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="index" value="@item.Index" />
+                    <label class="me-1 small">Adet:</label>
+                    <input type="number" name="quantity" value="@item.Quantity" min="1" max="20"
+                           style="width:72px;" class="form-control form-control-sm d-inline-block" />
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Güncelle</button>
+                </form>
+            </div>
+            <div class="text-end ms-3">
+                <div class="text-muted small">Birim: ₺@item.UnitPrice.ToString("0.00")</div>
+                <div class="fw-bold" style="font-size:1.2rem;">₺@item.Subtotal.ToString("0.00")</div>
+                <form asp-action="Remove" method="post" class="mt-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="index" value="@item.Index" />
+                    <button type="submit" class="btn btn-sm btn-link text-danger p-0">Çıkar</button>
+                </form>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+        <form asp-action="Clear" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-secondary"
+                    onclick="return confirm('Sepeti tamamen temizlemek istiyor musun?');">
+                Sepeti Temizle
+            </button>
+        </form>
+        <div class="text-end">
+            <div class="cart-total">Toplam: ₺@Model.Total.ToString("0.00")</div>
+            <a asp-action="Checkout" class="btn btn-primary btn-lg mt-2">Siparişi Tamamla</a>
+        </div>
+    </div>
+}
