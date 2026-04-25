@@ -1,6 +1,7 @@
 // auth controller - kayit, giris, cikis
 const bcrypt = require('bcrypt');
 const db = require('../config/db');
+const locationService = require('../services/locationService');
 
 function registerForm(req, res) {
   res.render('auth/register', { title: 'Kayıt Ol' });
@@ -46,10 +47,21 @@ async function register(req, res) {
 
     const hash = await bcrypt.hash(password, 10);
 
+    // caterer ise adresi geocode etmeye calis
+    let lat = null;
+    let lng = null;
+    if (role === 'caterer' && address) {
+      const geo = await locationService.geocodeAddress(address);
+      if (geo) {
+        lat = geo.lat;
+        lng = geo.lng;
+      }
+    }
+
     await db.query(
-      `INSERT INTO users (name, email, password_hash, phone, role, address)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [name.trim(), email.trim().toLowerCase(), hash, phone || null, role, address || null]
+      `INSERT INTO users (name, email, password_hash, phone, role, address, latitude, longitude)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [name.trim(), email.trim().toLowerCase(), hash, phone || null, role, address || null, lat, lng]
     );
 
     req.flash('success', 'Kayıt başarılı, giriş yapabilirsin');

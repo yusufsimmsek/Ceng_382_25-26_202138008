@@ -27,8 +27,8 @@
               <%= user.name || user.email %>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
-              <li><a class="dropdown-item" href="/profile">Profil</a></li>
+              <li><a class="dropdown-item" href="/user">Dashboard</a></li>
+              <li><a class="dropdown-item" href="/user/profile">Profil</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST" class="m-0">
@@ -47,7 +47,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="/caterer/dashboard">Dashboard</a></li>
-              <li><a class="dropdown-item" href="/profile">Profil</a></li>
+              <li><a class="dropdown-item" href="/caterer/profile">Profil</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="/logout?_method=DELETE" method="POST" class="m-0">

@@ -88,7 +88,7 @@ sofranet/
 ## Notlar
 
 - Ödeme tamamen simüle edilmiştir, gerçek kart bilgisi kullanılmamalıdır.
-- Google Maps API key olmadan harita özellikleri çalışmaz.
+- Google Maps API key olmadan harita ve geocode özellikleri placeholder davranır (kayıtta lat/lng null kalır, profile'dan tarayıcı geolokasyonu ile sonradan eklenebilir).
 - PDF'ler her sipariş için kod ile dinamik olarak üretilir.
 
 ## Geliştiren

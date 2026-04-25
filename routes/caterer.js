@@ -9,6 +9,10 @@ router.get('/', (req, res) => {
 
 router.get('/dashboard', catererController.dashboard);
 
+router.get('/profile', catererController.profile);
+router.post('/profile/location', catererController.updateLocation);
+router.post('/profile/address', catererController.updateAddress);
+
 // menu yonetimi
 router.get('/menu', catererController.menuList);
 router.get('/menu/new', catererController.menuNewForm);

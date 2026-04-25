@@ -1,0 +1,88 @@
+<h2 class="mt-3 mb-3">Profilim</h2>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body p-4">
+        <h5 class="mb-3">Restoran Bilgileri</h5>
+        <div class="mb-2">
+          <small class="text-muted">İsim</small>
+          <div><%= profile.name %></div>
+        </div>
+        <div class="mb-2">
+          <small class="text-muted">Email</small>
+          <div><%= profile.email %></div>
+        </div>
+        <div class="mb-2">
+          <small class="text-muted">Telefon</small>
+          <div><%= profile.phone || '-' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body p-4">
+        <h5 class="mb-3">Restoran Adresi</h5>
+        <% if (profile.address) { %>
+          <p class="mb-3"><%= profile.address %></p>
+        <% } else { %>
+          <p class="text-muted mb-3"><em>Adres tanımlı değil.</em></p>
+        <% } %>
+
+        <form action="/caterer/profile/address" method="POST">
+          <div class="mb-2">
+            <textarea name="address" class="form-control" rows="3"
+                      placeholder="Açık adresini gir"><%= profile.address || '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Adresi Güncelle</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0 mt-3">
+  <div class="card-body p-4">
+    <h5 class="mb-3">Konum</h5>
+    <% if (profile.latitude && profile.longitude) { %>
+      <p class="mb-3">
+        <small class="text-muted">Restoran konumun:</small><br>
+        <%= Number(profile.latitude).toFixed(5) %>, <%= Number(profile.longitude).toFixed(5) %>
+      </p>
+    <% } else { %>
+      <p class="text-muted mb-3"><em>Konum tanımlı değil.</em></p>
+    <% } %>
+
+    <button id="locateBtn" type="button" class="btn btn-outline-primary">📍 Şuanki Konumumu Kullan</button>
+    <span id="locateStatus" class="ms-2 text-muted small"></span>
+
+    <form id="locationForm" action="/caterer/profile/location" method="POST" class="d-none">
+      <input type="hidden" name="lat" id="latInput">
+      <input type="hidden" name="lng" id="lngInput">
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('locateBtn').addEventListener('click', function() {
+    if (!navigator.geolocation) {
+      alert('Tarayıcın konum desteklemiyor');
+      return;
+    }
+    var status = document.getElementById('locateStatus');
+    status.textContent = 'Konum alınıyor...';
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        document.getElementById('latInput').value = pos.coords.latitude;
+        document.getElementById('lngInput').value = pos.coords.longitude;
+        document.getElementById('locationForm').submit();
+      },
+      function(err) {
+        status.textContent = '';
+        alert('Konum alınamadı: ' + err.message);
+      }
+    );
+  });
+</script>
