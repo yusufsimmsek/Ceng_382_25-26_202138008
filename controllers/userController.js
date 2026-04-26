@@ -19,14 +19,26 @@ async function profile(req, res) {
   }
 }
 
+// redirect param icin guvenli internal path'ler
+const ALLOWED_REDIRECTS = ['/menu', '/user/profile', '/user'];
+
+function safeRedirect(target) {
+  if (!target) return '/user/profile';
+  // baska bir host'a yonlendirme yok
+  if (target.startsWith('//') || target.includes('://')) return '/user/profile';
+  if (ALLOWED_REDIRECTS.includes(target)) return target;
+  return '/user/profile';
+}
+
 async function updateLocation(req, res) {
   try {
     const lat = parseFloat(req.body.lat);
     const lng = parseFloat(req.body.lng);
+    const redirectTo = safeRedirect(req.body.redirect);
 
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       req.flash('error', 'Gecersiz konum');
-      return res.redirect('/user/profile');
+      return res.redirect(redirectTo);
     }
 
     await db.query(
@@ -35,7 +47,7 @@ async function updateLocation(req, res) {
     );
 
     req.flash('success', 'Konum güncellendi');
-    res.redirect('/user/profile');
+    res.redirect(redirectTo);
   } catch (err) {
     console.error('update location error:', err);
     req.flash('error', 'Konum güncellenemedi');

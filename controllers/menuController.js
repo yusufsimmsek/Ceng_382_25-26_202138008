@@ -1,13 +1,55 @@
 // menu controller - herkese acik menu listesi
 const db = require('../config/db');
+const locationService = require('../services/locationService');
 
+// NOT: Distance Matrix API her cagrida quota tuketiyor. Haversine pre-filter
+// (services/locationService.js icindeki filterCaterersByDistance) sayesinde
+// sadece olasi adaylar Matrix'e gidiyor - bu sekilde quota israfini onluyoruz.
 async function list(req, res) {
   try {
     const filters = {
       caterer: req.query.caterer || '',
       minPrice: req.query.minPrice || '',
-      maxPrice: req.query.maxPrice || ''
+      maxPrice: req.query.maxPrice || '',
+      radius: req.query.radius || '10'
     };
+
+    // konum filtresi sadece logged-in 'user' icin
+    let userLoc = null;
+    let locationAvailable = false;
+    let nearbyCatererIds = null;
+    let catererDistances = {}; // id -> distance (km)
+
+    const sessUser = req.session.user;
+    if (sessUser && sessUser.role === 'user') {
+      const u = await db.query(
+        'SELECT latitude, longitude FROM users WHERE id = $1',
+        [sessUser.id]
+      );
+      if (u.rows.length && u.rows[0].latitude != null && u.rows[0].longitude != null) {
+        userLoc = {
+          lat: Number(u.rows[0].latitude),
+          lng: Number(u.rows[0].longitude)
+        };
+        locationAvailable = true;
+
+        const radiusKm = Math.max(1, parseInt(filters.radius, 10) || 10);
+
+        // tum caterer'lari cek (konumu olanlar)
+        const catRes = await db.query(
+          "SELECT id, name, latitude, longitude, address FROM users WHERE role = 'caterer' AND latitude IS NOT NULL AND longitude IS NOT NULL"
+        );
+
+        const nearby = await locationService.filterCaterersByDistance(
+          catRes.rows, userLoc, radiusKm
+        );
+
+        nearbyCatererIds = nearby.map((c) => c.id);
+        for (const c of nearby) {
+          catererDistances[c.id] = c.distance;
+        }
+      }
+    }
 
     // dinamik WHERE
     const where = ['mi.is_available = TRUE'];
@@ -24,6 +66,18 @@ async function list(req, res) {
     if (filters.maxPrice !== '' && !isNaN(parseFloat(filters.maxPrice))) {
       params.push(parseFloat(filters.maxPrice));
       where.push('mi.price <= $' + params.length);
+    }
+
+    // lokasyon filtresi (sadece nearbyCatererIds varsa)
+    if (nearbyCatererIds !== null) {
+      if (nearbyCatererIds.length === 0) {
+        // hicbir yakın caterer yok -> hicbir item dondur
+        where.push('1 = 0');
+      } else {
+        const placeholders = nearbyCatererIds.map((_, i) => '$' + (params.length + i + 1));
+        params.push(...nearbyCatererIds);
+        where.push('mi.caterer_id IN (' + placeholders.join(',') + ')');
+      }
     }
 
     const sql = `
@@ -45,15 +99,18 @@ async function list(req, res) {
 
     const result = await db.query(sql, params);
 
-    const catRes = await db.query(
+    const catListRes = await db.query(
       "SELECT id, name FROM users WHERE role = 'caterer' ORDER BY name"
     );
 
     res.render('user/menu', {
       title: 'Menüler',
       items: result.rows,
-      caterers: catRes.rows,
-      filters
+      caterers: catListRes.rows,
+      filters,
+      locationAvailable,
+      catererDistances,
+      isUserRole: sessUser && sessUser.role === 'user'
     });
   } catch (err) {
     console.error('menu list error:', err);

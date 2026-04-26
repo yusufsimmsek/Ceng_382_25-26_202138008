@@ -226,6 +226,28 @@ tr.inactive {
   color: #f5a623;
   font-size: 0.9rem;
 }
+.location-banner-warn {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.location-banner-ok {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.distance-badge {
+  display: inline-block;
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
 
 /* menu detail */
 .menu-detail-image {
