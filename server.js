@@ -58,6 +58,7 @@ app.use((req, res, next) => {
     error: req.flash('error'),
     info: req.flash('info')
   };
+  res.locals.googleMapsKey = process.env.GOOGLE_MAPS_API_KEY || '';
   next();
 });
 

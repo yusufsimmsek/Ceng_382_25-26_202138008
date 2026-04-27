@@ -26,5 +26,16 @@
   <%- include('partials/footer') %>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <% if (typeof needsMaps !== 'undefined' && needsMaps) { %>
+    <% var validKey = googleMapsKey && googleMapsKey !== 'placeholder' && !googleMapsKey.startsWith('your_'); %>
+    <% if (validKey) { %>
+      <script src="/js/maps.js"></script>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= googleMapsKey %>&callback=initMaps"></script>
+    <% } else { %>
+      <script>window.GMAPS_DISABLED = true;</script>
+      <script src="/js/maps.js"></script>
+    <% } %>
+  <% } %>
 </body>
 </html>

@@ -46,6 +46,21 @@
     <% } %>
 
     <div class="detail-price mt-3">₺<%= Number(item.price).toFixed(2) %></div>
+
+    <!-- restoran konumu -->
+    <div class="mt-4">
+      <h6 class="mb-2">Restoran Konumu</h6>
+      <% if (item.caterer_latitude != null && item.caterer_longitude != null) { %>
+        <div id="menuDetailMap"
+             style="width: 100%; height: 250px; border-radius: 8px;"
+             data-lat="<%= item.caterer_latitude %>"
+             data-lng="<%= item.caterer_longitude %>"
+             data-name="<%= item.caterer_name %>">
+        </div>
+      <% } else { %>
+        <p class="text-muted small">Konum bilgisi yok.</p>
+      <% } %>
+    </div>
   </div>
 </div>
 

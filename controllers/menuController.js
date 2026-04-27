@@ -19,6 +19,7 @@ async function list(req, res) {
     let locationAvailable = false;
     let nearbyCatererIds = null;
     let catererDistances = {}; // id -> distance (km)
+    let mapCaterers = []; // harita icin lightweight obje
 
     const sessUser = req.session.user;
     if (sessUser && sessUser.role === 'user') {
@@ -48,6 +49,14 @@ async function list(req, res) {
         for (const c of nearby) {
           catererDistances[c.id] = c.distance;
         }
+        mapCaterers = nearby.map((c) => ({
+          id: c.id,
+          name: c.name,
+          lat: Number(c.latitude),
+          lng: Number(c.longitude),
+          address: c.address,
+          distance: c.distance
+        }));
       }
     }
 
@@ -110,7 +119,11 @@ async function list(req, res) {
       filters,
       locationAvailable,
       catererDistances,
-      isUserRole: sessUser && sessUser.role === 'user'
+      isUserRole: sessUser && sessUser.role === 'user',
+      needsMaps: locationAvailable,
+      userLat: userLoc ? userLoc.lat : null,
+      userLng: userLoc ? userLoc.lng : null,
+      mapCaterers
     });
   } catch (err) {
     console.error('menu list error:', err);
@@ -127,6 +140,7 @@ async function detail(req, res) {
 
     const itemRes = await db.query(
       `SELECT mi.*, u.name as caterer_name, u.id as caterer_owner_id, u.address as caterer_address,
+         u.latitude as caterer_latitude, u.longitude as caterer_longitude,
          (SELECT AVG(r.menu_rating)::numeric(3,2) FROM ratings r
             JOIN orders o ON o.id = r.order_id
             WHERE r.menu_item_id = mi.id AND o.status = 'completed') as menu_avg,
@@ -181,7 +195,8 @@ async function detail(req, res) {
       item,
       groups,
       removables: removablesRes.rows,
-      recentComments: commentsRes.rows
+      recentComments: commentsRes.rows,
+      needsMaps: true
     });
   } catch (err) {
     console.error('menu detail error:', err);
