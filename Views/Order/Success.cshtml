@@ -1,0 +1,51 @@
+@model Sofranet.Helpers.FullOrderInfo
+@{
+    ViewData["Title"] = $"Sipariş #{Model.Order.Id}";
+}
+
+<div class="text-center my-4">
+    <div style="font-size:5rem;color:#28a745;line-height:1;">✓</div>
+    <h2 class="mt-2">Sipariş #@Model.Order.Id başarıyla alındı</h2>
+    <p class="text-muted">Email bildirimi gönderildi: @Model.User.Email</p>
+</div>
+
+<div class="card mx-auto border-0 shadow-sm" style="max-width:720px;">
+    <div class="card-body p-4">
+        <div class="row mb-3">
+            <div class="col-6"><strong>Restoran:</strong> @Model.Caterer.FullName</div>
+            <div class="col-6 text-end text-muted">
+                <small>@Model.Order.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+            </div>
+        </div>
+        <div class="text-muted mb-3"><small>Teslimat: @Model.Order.DeliveryAddress</small></div>
+
+        @foreach (var item in Model.Items)
+        {
+            <div class="d-flex justify-content-between border-bottom py-2">
+                <div>
+                    @item.Quantity × <strong>@item.Name</strong>
+                    @if (item.Options.Any())
+                    {
+                        <br /><small class="text-muted">@string.Join(", ", item.Options.Select(o => o.OptionName))</small>
+                    }
+                    @if (item.Removals.Any())
+                    {
+                        <br /><small class="text-muted">Çıkarıldı: @string.Join(", ", item.Removals)</small>
+                    }
+                </div>
+                <span>₺@item.Subtotal.ToString("0.00")</span>
+            </div>
+        }
+        <div class="d-flex justify-content-between mt-3"
+             style="font-size:1.3rem;color:var(--sofra-primary);font-weight:600;">
+            <span>Toplam:</span>
+            <span>₺@Model.Order.TotalAmount.ToString("0.00")</span>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
+    <a asp-action="Receipt" asp-route-id="@Model.Order.Id" class="btn btn-outline-primary">📄 Makbuzu İndir</a>
+    <a asp-action="Agreement" asp-route-id="@Model.Order.Id" class="btn btn-outline-primary">📋 Sözleşmeyi İndir</a>
+    <a asp-action="MyOrders" class="btn btn-primary">Siparişlerime Git</a>
+</div>

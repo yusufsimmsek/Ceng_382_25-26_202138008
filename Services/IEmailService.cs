@@ -1,6 +1,11 @@
+using Sofranet.Helpers;
+using Sofranet.Models;
+
 namespace Sofranet.Services;
 
 public interface IEmailService
 {
-    Task SendAsync(string to, string subject, string htmlBody);
+    Task<bool> SendOrderConfirmationToUserAsync(FullOrderInfo info);
+    Task<bool> SendOrderNotificationToCatererAsync(FullOrderInfo info);
+    Task<bool> SendTwoFactorCodeAsync(ApplicationUser user, string code);
 }

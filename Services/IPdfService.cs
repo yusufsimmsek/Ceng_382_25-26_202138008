@@ -1,9 +1,9 @@
-using Sofranet.Models;
+using Sofranet.Helpers;
 
 namespace Sofranet.Services;
 
 public interface IPdfService
 {
-    byte[] GenerateReceipt(Order order);
-    byte[] GenerateAgreement(Order order);
+    byte[] GenerateReceipt(FullOrderInfo info);
+    byte[] GenerateAgreement(FullOrderInfo info);
 }

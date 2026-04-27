@@ -143,6 +143,19 @@ a:hover {
     box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
 }
 
+/* Order status badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+.status-pending { background: #ffc107; color: #2B2B2B; }
+.status-preparing { background: #0dcaf0; color: #fff; }
+.status-completed { background: #28a745; color: #fff; }
+.status-cancelled { background: #6c757d; color: #fff; }
+
 /* Cart */
 .cart-row {
     background: #fff;

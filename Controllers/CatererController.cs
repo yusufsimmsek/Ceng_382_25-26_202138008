@@ -373,4 +373,78 @@ public class CatererController : Controller
         TempData["SuccessMessage"] = "Malzeme silindi";
         return RedirectToAction(nameof(MenuCustomize), new { id = menuItemId });
     }
+
+    // === ORDERS (gelen siparişler) ===
+    public async Task<IActionResult> Orders(string? status, int page = 1)
+    {
+        if (page < 1) page = 1;
+        var userId = _userManager.GetUserId(User);
+        var query = _db.Orders.Where(o => o.CatererId == userId);
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(o => o.Status == status);
+
+        var total = await query.CountAsync();
+        var orders = await query
+            .Include(o => o.User)
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * 20).Take(20)
+            .Select(o => new CatererOrderListItem
+            {
+                Id = o.Id,
+                TotalAmount = o.TotalAmount,
+                Status = o.Status,
+                CreatedAt = o.CreatedAt,
+                UserName = o.User!.FullName,
+                UserEmail = o.User!.Email ?? "-",
+                ItemCount = _db.OrderItems.Count(i => i.OrderId == o.Id)
+            })
+            .ToListAsync();
+
+        ViewBag.Status = status;
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / 20.0);
+        ViewBag.Total = total;
+        ViewData["Title"] = "Gelen Siparişler";
+        return View(orders);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateOrderStatus(int id, string newStatus)
+    {
+        var userId = _userManager.GetUserId(User);
+        var order = await _db.Orders
+            .FirstOrDefaultAsync(o => o.Id == id && o.CatererId == userId);
+        if (order == null)
+        {
+            TempData["ErrorMessage"] = "Sipariş bulunamadı";
+            return RedirectToAction(nameof(Orders));
+        }
+
+        var allowed = new[] { "pending", "preparing", "completed", "cancelled" };
+        if (!allowed.Contains(newStatus))
+        {
+            TempData["ErrorMessage"] = "Geçersiz durum";
+            return RedirectToAction(nameof(Orders));
+        }
+        order.Status = newStatus;
+        if (newStatus == "completed") order.CompletedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+        await _logs.LogAsync(HttpContext, "ORDER_STATUS_CHANGED",
+            $"order_id={id} new_status={newStatus}", userId);
+        TempData["SuccessMessage"] = "Durum güncellendi";
+        return RedirectToAction(nameof(Orders));
+    }
+}
+
+public class CatererOrderListItem
+{
+    public int Id { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string Status { get; set; } = "";
+    public DateTime CreatedAt { get; set; }
+    public string UserName { get; set; } = "";
+    public string UserEmail { get; set; } = "";
+    public int ItemCount { get; set; }
 }
