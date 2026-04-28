@@ -1,0 +1,97 @@
+<h2 class="mt-3 mb-3">Sepetim</h2>
+
+<% if (pendingItem) { %>
+  <div class="alert alert-warning">
+    <p class="mb-2">
+      <strong>Sepetinde başka bir restorandan ürünler var.</strong>
+      Yeni ürünü eklemek için mevcut sepeti temizlemen gerekiyor.
+    </p>
+    <form action="/cart/confirm-replace" method="POST" class="d-inline">
+      <button type="submit" class="btn btn-warning btn-sm">Sepeti Temizle ve Yeni Ürünü Ekle</button>
+    </form>
+    <form action="/cart/cancel-pending" method="POST" class="d-inline">
+      <button type="submit" class="btn btn-outline-secondary btn-sm">Vazgeç</button>
+    </form>
+  </div>
+<% } %>
+
+<% if (!cartItems || cartItems.length === 0) { %>
+  <div class="empty-state text-center p-5">
+    <div style="font-size: 3rem;">🛒</div>
+    <p class="text-muted mb-3">Sepetin boş.</p>
+    <a href="/menu" class="btn btn-primary">Menülere göz at</a>
+  </div>
+<% } else { %>
+  <% if (caterer) { %>
+    <h4 class="mb-3 text-muted">Sipariş: <%= caterer.name %></h4>
+  <% } %>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <% cartItems.forEach(function(ci){ %>
+        <div class="cart-row p-3 border-bottom">
+          <div class="d-flex gap-3">
+            <img src="<%= ci.menuItem ? (ci.menuItem.image_path || '/images/no-image.svg') : '/images/no-image.svg' %>"
+                 alt="<%= ci.menuItem ? ci.menuItem.name : '' %>"
+                 style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px;">
+
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between">
+                <strong><%= ci.menuItem ? ci.menuItem.name : '(silinmiş ürün)' %></strong>
+                <div class="text-end">
+                  <div class="text-muted small">Birim: ₺<%= ci.unitPrice.toFixed(2) %></div>
+                  <div class="fw-bold" style="color: var(--primary);">
+                    ₺<%= ci.subtotal.toFixed(2) %>
+                  </div>
+                </div>
+              </div>
+
+              <% if (ci.options && ci.options.length > 0) { %>
+                <div class="small text-muted mt-1">
+                  <% ci.options.forEach(function(o, i){ %>
+                    <%= o.group_name %>: <%= o.name %><% if (Number(o.extra_price) > 0) { %> (+₺<%= Number(o.extra_price).toFixed(2) %>)<% } %><% if (i < ci.options.length - 1) { %>, <% } %>
+                  <% }) %>
+                </div>
+              <% } %>
+
+              <% if (ci.removals && ci.removals.length > 0) { %>
+                <div class="small text-muted mt-1">
+                  Çıkarıldı: <%= ci.removals.map(function(r){ return r.name; }).join(', ') %>
+                </div>
+              <% } %>
+
+              <div class="d-flex align-items-center gap-2 mt-2">
+                <form action="/cart/update/<%= ci.idx %>" method="POST" class="d-flex align-items-center gap-1 m-0">
+                  <label class="small text-muted me-1">Adet:</label>
+                  <input type="number" name="quantity" value="<%= ci.quantity %>"
+                         min="1" max="20" class="form-control form-control-sm" style="width: 70px;">
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Güncelle</button>
+                </form>
+                <form action="/cart/remove/<%= ci.idx %>" method="POST" class="m-0"
+                      onsubmit="return confirm('Bu ürünü sepetten çıkarmak istiyor musun?');">
+                  <button type="submit" class="btn btn-sm btn-link text-danger">Çıkar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+    <form action="/cart/clear" method="POST" class="m-0"
+          onsubmit="return confirm('Sepetin tamamını boşaltmak istiyor musun?');">
+      <button type="submit" class="btn btn-outline-danger btn-sm">Sepeti Temizle</button>
+    </form>
+
+    <div class="text-end">
+      <div class="text-muted">Toplam</div>
+      <div class="cart-total">₺<%= total.toFixed(2) %></div>
+    </div>
+  </div>
+
+  <div class="mt-3 text-end">
+    <a href="/cart/checkout" class="btn btn-primary btn-lg">Siparişi Tamamla</a>
+  </div>
+<% } %>

@@ -264,6 +264,16 @@ tr.inactive {
   font-style: italic;
 }
 
+/* sepet */
+.cart-row:last-of-type {
+  border-bottom: none !important;
+}
+.cart-total {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
 /* menu detail */
 .menu-detail-image {
   width: 100%;
