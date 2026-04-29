@@ -14,4 +14,7 @@ router.post('/clear', cartController.clearCart);
 router.post('/confirm-replace', cartController.confirmReplace);
 router.post('/cancel-pending', cartController.cancelPending);
 
+router.get('/checkout', cartController.checkoutForm);
+router.post('/checkout', cartController.processPayment);
+
 module.exports = router;

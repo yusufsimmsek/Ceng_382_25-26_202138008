@@ -1,5 +1,6 @@
 // cart controller - session-based sepet
 const db = require('../config/db');
+const locationService = require('../services/locationService');
 
 function initCart(req) {
   if (!req.session.cart) req.session.cart = [];
@@ -173,87 +174,85 @@ function cancelPending(req, res) {
   res.redirect('/cart');
 }
 
+// cart'i DB'den zenginlestir - viewCart ve checkoutForm ortak kullaniyor
+async function enrichCart(cart) {
+  if (!cart || cart.length === 0) {
+    return { cartItems: [], total: 0, caterer: null };
+  }
+
+  const menuIds = [...new Set(cart.map((c) => c.menuItemId))];
+  const optIds = [...new Set(cart.flatMap((c) => c.options || []))];
+  const remIds = [...new Set(cart.flatMap((c) => c.removals || []))];
+
+  const miRes = await db.query(
+    'SELECT id, name, price, image_path FROM menu_items WHERE id = ANY($1::int[])',
+    [menuIds]
+  );
+  const menuMap = {};
+  miRes.rows.forEach((m) => { menuMap[m.id] = m; });
+
+  const optMap = {};
+  if (optIds.length > 0) {
+    const optRes = await db.query(
+      `SELECT o.id, o.name, o.extra_price, og.name as group_name
+       FROM options o JOIN option_groups og ON og.id = o.group_id
+       WHERE o.id = ANY($1::int[])`,
+      [optIds]
+    );
+    optRes.rows.forEach((o) => { optMap[o.id] = o; });
+  }
+
+  const remMap = {};
+  if (remIds.length > 0) {
+    const remRes = await db.query(
+      'SELECT id, name FROM removable_ingredients WHERE id = ANY($1::int[])',
+      [remIds]
+    );
+    remRes.rows.forEach((r) => { remMap[r.id] = r; });
+  }
+
+  let total = 0;
+  const cartItems = cart.map((c, idx) => {
+    const mi = menuMap[c.menuItemId];
+    const basePrice = mi ? Number(mi.price) : 0;
+    const opts = (c.options || []).map((id) => optMap[id]).filter(Boolean);
+    const extras = opts.reduce((s, o) => s + Number(o.extra_price), 0);
+    const rems = (c.removals || []).map((id) => remMap[id]).filter(Boolean);
+    const unit = basePrice + extras;
+    const subtotal = unit * c.quantity;
+    total += subtotal;
+    return {
+      idx,
+      menuItem: mi,
+      options: opts,
+      removals: rems,
+      quantity: c.quantity,
+      unitPrice: unit,
+      subtotal
+    };
+  });
+
+  const cRes = await db.query(
+    'SELECT id, name FROM users WHERE id = $1',
+    [cart[0].catererId]
+  );
+
+  return { cartItems, total, caterer: cRes.rows[0] || null };
+}
+
 async function viewCart(req, res) {
   initCart(req);
   try {
     const cart = req.session.cart;
     const pendingItem = req.session.pendingItem || null;
 
-    if (cart.length === 0) {
-      return res.render('user/cart', {
-        title: 'Sepetim',
-        cartItems: [],
-        total: 0,
-        caterer: null,
-        pendingItem
-      });
-    }
-
-    // toplu fetch icin ID'leri topla
-    const menuIds = [...new Set(cart.map((c) => c.menuItemId))];
-    const optIds = [...new Set(cart.flatMap((c) => c.options || []))];
-    const remIds = [...new Set(cart.flatMap((c) => c.removals || []))];
-
-    const miRes = await db.query(
-      'SELECT id, name, price, image_path FROM menu_items WHERE id = ANY($1::int[])',
-      [menuIds]
-    );
-    const menuMap = {};
-    miRes.rows.forEach((m) => { menuMap[m.id] = m; });
-
-    const optMap = {};
-    if (optIds.length > 0) {
-      const optRes = await db.query(
-        `SELECT o.id, o.name, o.extra_price, og.name as group_name
-         FROM options o JOIN option_groups og ON og.id = o.group_id
-         WHERE o.id = ANY($1::int[])`,
-        [optIds]
-      );
-      optRes.rows.forEach((o) => { optMap[o.id] = o; });
-    }
-
-    const remMap = {};
-    if (remIds.length > 0) {
-      const remRes = await db.query(
-        'SELECT id, name FROM removable_ingredients WHERE id = ANY($1::int[])',
-        [remIds]
-      );
-      remRes.rows.forEach((r) => { remMap[r.id] = r; });
-    }
-
-    // cart'i zenginlestir + subtotal
-    let total = 0;
-    const cartItems = cart.map((c, idx) => {
-      const mi = menuMap[c.menuItemId];
-      const basePrice = mi ? Number(mi.price) : 0;
-      const opts = (c.options || []).map((id) => optMap[id]).filter(Boolean);
-      const extras = opts.reduce((s, o) => s + Number(o.extra_price), 0);
-      const rems = (c.removals || []).map((id) => remMap[id]).filter(Boolean);
-      const unit = basePrice + extras;
-      const subtotal = unit * c.quantity;
-      total += subtotal;
-      return {
-        idx,
-        menuItem: mi,
-        options: opts,
-        removals: rems,
-        quantity: c.quantity,
-        unitPrice: unit,
-        subtotal
-      };
-    });
-
-    // caterer bilgisi
-    const cRes = await db.query(
-      'SELECT id, name FROM users WHERE id = $1',
-      [cart[0].catererId]
-    );
+    const { cartItems, total, caterer } = await enrichCart(cart);
 
     res.render('user/cart', {
       title: 'Sepetim',
       cartItems,
       total,
-      caterer: cRes.rows[0] || null,
+      caterer,
       pendingItem
     });
   } catch (err) {
@@ -300,6 +299,131 @@ function clearCart(req, res) {
   res.redirect('/menu');
 }
 
+async function checkoutForm(req, res) {
+  initCart(req);
+  try {
+    const cart = req.session.cart;
+    if (cart.length === 0) {
+      req.flash('error', 'Sepetin boş');
+      return res.redirect('/menu');
+    }
+
+    const { cartItems, total, caterer } = await enrichCart(cart);
+
+    const uRes = await db.query(
+      'SELECT id, name, email, address, latitude, longitude FROM users WHERE id = $1',
+      [req.session.user.id]
+    );
+    const profileUser = uRes.rows[0];
+
+    if (req.session.paymentApproved) {
+      return res.render('user/checkout-approved', {
+        title: 'Ödeme Onaylandı',
+        cartItems,
+        total,
+        caterer,
+        deliveryInfo: req.session.deliveryInfo || null
+      });
+    }
+
+    res.render('user/checkout', {
+      title: 'Ödeme',
+      cartItems,
+      total,
+      caterer,
+      profileUser
+    });
+  } catch (err) {
+    console.error('checkout form error:', err);
+    res.status(500).send('Checkout yüklenemedi');
+  }
+}
+
+async function processPayment(req, res) {
+  initCart(req);
+  try {
+    if (req.session.cart.length === 0) {
+      req.flash('error', 'Sepetin boş');
+      return res.redirect('/menu');
+    }
+
+    const {
+      card_name, card_number, card_expiry, card_cvv,
+      delivery_address, use_profile_address
+    } = req.body;
+
+    if (!card_name || card_name.trim() === '') {
+      req.flash('error', 'Kart üzerindeki isim gerekli');
+      return res.redirect('/cart/checkout');
+    }
+    const cleanedCard = (card_number || '').replace(/\s+/g, '');
+    if (!/^\d{13,19}$/.test(cleanedCard)) {
+      req.flash('error', 'Geçersiz kart numarası');
+      return res.redirect('/cart/checkout');
+    }
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(card_expiry || '')) {
+      req.flash('error', 'Son kullanma tarihi MM/YY formatında olmalı');
+      return res.redirect('/cart/checkout');
+    }
+    if (!/^\d{3,4}$/.test(card_cvv || '')) {
+      req.flash('error', 'CVV 3-4 haneli olmalı');
+      return res.redirect('/cart/checkout');
+    }
+
+    // teslimat adresi
+    const useProfile = use_profile_address === 'on' || use_profile_address === 'true';
+    let addr = null;
+    let addrLat = null;
+    let addrLng = null;
+
+    const uRes = await db.query(
+      'SELECT address, latitude, longitude FROM users WHERE id = $1',
+      [req.session.user.id]
+    );
+    const profile = uRes.rows[0];
+
+    if (useProfile) {
+      if (!profile || !profile.address) {
+        req.flash('error', 'Profil adresin yok, manuel girmelisin');
+        return res.redirect('/cart/checkout');
+      }
+      addr = profile.address;
+      addrLat = profile.latitude;
+      addrLng = profile.longitude;
+    } else {
+      if (!delivery_address || delivery_address.trim() === '') {
+        req.flash('error', 'Teslimat adresi gerekli');
+        return res.redirect('/cart/checkout');
+      }
+      addr = delivery_address.trim();
+      const geo = await locationService.geocodeAddress(addr);
+      if (geo) {
+        addrLat = geo.lat;
+        addrLng = geo.lng;
+      }
+    }
+
+    // payment simulation
+    // 4242 4242 4242 4242 - kesin basarili
+    // 0000 ile bitiyorsa - kesin basarisiz (test icin)
+    // diger - basarili
+    if (cleanedCard.endsWith('0000') && cleanedCard !== '4242424242424242') {
+      req.flash('error', 'Kart bilgileri reddedildi. Lütfen tekrar dene.');
+      return res.redirect('/cart/checkout');
+    }
+
+    req.session.paymentApproved = true;
+    req.session.deliveryInfo = { address: addr, lat: addrLat, lng: addrLng };
+
+    req.flash('success', 'Ödeme onaylandı (simülasyon)');
+    res.redirect('/cart/checkout');
+  } catch (err) {
+    console.error('payment error:', err);
+    req.flash('error', 'Ödeme sirasinda hata olustu');
+    res.redirect('/cart/checkout');
+  }
+}
+
 module.exports = {
   addItem,
   viewCart,
@@ -307,5 +431,7 @@ module.exports = {
   removeItem,
   clearCart,
   confirmReplace,
-  cancelPending
+  cancelPending,
+  checkoutForm,
+  processPayment
 };
