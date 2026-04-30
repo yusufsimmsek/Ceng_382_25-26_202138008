@@ -1,0 +1,50 @@
+<h2 class="mt-3 mb-3">Siparişlerim</h2>
+
+<% if (!orders || orders.length === 0) { %>
+  <div class="empty-state text-center p-5">
+    <div style="font-size: 3rem;">📦</div>
+    <p class="text-muted mb-3">Henüz sipariş vermedin.</p>
+    <a href="/menu" class="btn btn-primary">Menülere göz at</a>
+  </div>
+<% } else { %>
+  <% var statusLabels = { pending:'Bekliyor', preparing:'Hazırlanıyor', completed:'Tamamlandı', cancelled:'İptal' }; %>
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tarih</th>
+            <th>Restoran</th>
+            <th>Ürün</th>
+            <th>Toplam</th>
+            <th>Durum</th>
+            <th class="text-end">İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(function(o){ %>
+            <tr>
+              <td>#<%= o.id %></td>
+              <td><%= new Date(o.created_at).toLocaleDateString('tr-TR') %></td>
+              <td><%= o.caterer_name %></td>
+              <td><%= o.item_count %></td>
+              <td>₺<%= Number(o.total_amount).toFixed(2) %></td>
+              <td>
+                <span class="status-badge status-<%= o.status %>">
+                  <%= statusLabels[o.status] || o.status %>
+                </span>
+              </td>
+              <td class="text-end">
+                <a href="/orders/<%= o.id %>/success" class="btn btn-sm btn-outline-secondary">Detay</a>
+                <% if (o.status === 'completed' && !o.has_rating) { %>
+                  <a href="/orders/<%= o.id %>/rate" class="btn btn-sm btn-outline-primary">Değerlendir</a>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>

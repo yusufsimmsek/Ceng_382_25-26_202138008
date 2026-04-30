@@ -1,0 +1,79 @@
+<div class="order-success-icon">✓</div>
+<h2 class="text-center mb-2">Sipariş #<%= order.id %> başarıyla alındı</h2>
+<p class="text-center text-muted mb-4">Siparişiniz hazırlanmaya başlandı.</p>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-body p-4">
+        <h5 class="mb-3">Sipariş Bilgileri</h5>
+        <div class="row g-2 mb-3">
+          <div class="col-sm-6">
+            <small class="text-muted">Sipariş No</small>
+            <div>#<%= order.id %></div>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted">Tarih</small>
+            <div><%= new Date(order.created_at).toLocaleString('tr-TR') %></div>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted">Restoran</small>
+            <div><%= order.caterer_name %></div>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted">Durum</small>
+            <div>
+              <span class="status-badge status-<%= order.status %>">
+                <% var statusLabels = { pending:'Bekliyor', preparing:'Hazırlanıyor', completed:'Tamamlandı', cancelled:'İptal' }; %>
+                <%= statusLabels[order.status] || order.status %>
+              </span>
+            </div>
+          </div>
+          <% if (order.delivery_address) { %>
+            <div class="col-12">
+              <small class="text-muted">Teslimat Adresi</small>
+              <div><%= order.delivery_address %></div>
+            </div>
+          <% } %>
+        </div>
+
+        <h6 class="mb-2">Ürünler</h6>
+        <% items.forEach(function(it){ %>
+          <div class="checkout-summary-item">
+            <div class="d-flex justify-content-between">
+              <span><%= it.quantity %>x <%= it.menu_name || '(silinmiş)' %></span>
+              <span>₺<%= (Number(it.item_price) + Number(it.customization_extra || 0)) * it.quantity %></span>
+            </div>
+            <% if (it.options && it.options.length > 0) { %>
+              <div class="small text-muted">
+                <em><%= it.options.map(function(o){ return o.group_name + ': ' + o.name; }).join(', ') %></em>
+              </div>
+            <% } %>
+            <% if (it.removals && it.removals.length > 0) { %>
+              <div class="small text-muted">
+                <em>Çıkarıldı: <%= it.removals.map(function(r){ return r.name; }).join(', ') %></em>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+
+        <div class="d-flex justify-content-between mt-3 pt-3" style="border-top: 1px solid #ddd;">
+          <strong>Toplam</strong>
+          <strong style="color: var(--primary); font-size: 1.4rem;">
+            ₺<%= Number(order.total_amount).toFixed(2) %>
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="/orders/<%= order.id %>/receipt" class="btn btn-outline-primary">📄 Makbuzu İndir</a>
+      <a href="/orders/<%= order.id %>/agreement" class="btn btn-outline-primary">📋 Sözleşmeyi İndir</a>
+      <a href="/orders" class="btn btn-primary ms-auto">Siparişlerime Git</a>
+    </div>
+
+    <p class="text-muted small mt-3 text-center">
+      Email bilgilendirmesi yakında etkinleştirilecek.
+    </p>
+  </div>
+</div>

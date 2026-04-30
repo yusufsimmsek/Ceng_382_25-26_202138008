@@ -557,6 +557,77 @@ async function updateAddress(req, res) {
   }
 }
 
+// ============================
+// orders
+// ============================
+
+async function ordersList(req, res) {
+  try {
+    const catererId = req.session.user.id;
+    const statusFilter = req.query.status || '';
+
+    const where = ['o.caterer_id = $1'];
+    const params = [catererId];
+    if (['pending', 'preparing', 'completed', 'cancelled'].includes(statusFilter)) {
+      params.push(statusFilter);
+      where.push('o.status = $' + params.length);
+    }
+
+    const sql = `SELECT o.*, u.name as user_name, u.email as user_email,
+                   (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as item_count
+                 FROM orders o JOIN users u ON u.id = o.user_id
+                 WHERE ${where.join(' AND ')}
+                 ORDER BY o.created_at DESC`;
+
+    const result = await db.query(sql, params);
+    res.render('caterer/orders', {
+      title: 'Gelen Siparişler',
+      orders: result.rows,
+      statusFilter
+    });
+  } catch (err) {
+    console.error('caterer orders list error:', err);
+    res.status(500).send('Siparişler yüklenemedi');
+  }
+}
+
+async function updateOrderStatus(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const newStatus = req.body.status;
+    const allowed = ['pending', 'preparing', 'completed', 'cancelled'];
+
+    if (!allowed.includes(newStatus)) {
+      req.flash('error', 'Geçersiz durum');
+      return res.redirect('/caterer/orders');
+    }
+
+    const catererId = req.session.user.id;
+    let sql;
+    if (newStatus === 'completed') {
+      sql = `UPDATE orders SET status = $1, completed_at = NOW()
+             WHERE id = $2 AND caterer_id = $3`;
+    } else {
+      sql = `UPDATE orders SET status = $1
+             WHERE id = $2 AND caterer_id = $3`;
+    }
+    const result = await db.query(sql, [newStatus, id, catererId]);
+
+    if (result.rowCount === 0) {
+      req.flash('error', 'Sipariş bulunamadi');
+    } else {
+      // TODO: Faz 10 - logging
+      console.log('LOG: ORDER_STATUS_CHANGED order=', id, 'status=', newStatus);
+      req.flash('success', 'Sipariş durumu güncellendi');
+    }
+    res.redirect('/caterer/orders');
+  } catch (err) {
+    console.error('update order status error:', err);
+    req.flash('error', 'Güncelleme sirasinda hata olustu');
+    res.redirect('/caterer/orders');
+  }
+}
+
 module.exports = {
   dashboard,
   menuList,
@@ -574,5 +645,7 @@ module.exports = {
   removableDelete,
   profile,
   updateLocation,
-  updateAddress
+  updateAddress,
+  ordersList,
+  updateOrderStatus
 };

@@ -307,6 +307,28 @@ tr.inactive {
   line-height: 1;
 }
 
+/* siparis durum badge'leri */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.status-pending { background: #ffc107; color: #000; }
+.status-preparing { background: #0dcaf0; color: #fff; }
+.status-completed { background: #28a745; color: #fff; }
+.status-cancelled { background: #6c757d; color: #fff; }
+
+.order-success-icon {
+  font-size: 5rem;
+  color: #28a745;
+  text-align: center;
+  display: block;
+  margin: 20px 0;
+  line-height: 1;
+}
+
 /* menu detail */
 .menu-detail-image {
   width: 100%;

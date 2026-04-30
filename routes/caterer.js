@@ -30,4 +30,8 @@ router.post('/menu/:id/options/:optionId/delete', catererController.optionDelete
 router.post('/menu/:id/removables', catererController.removableCreate);
 router.post('/menu/:id/removables/:removableId/delete', catererController.removableDelete);
 
+// orders
+router.get('/orders', catererController.ordersList);
+router.post('/orders/:id/status', catererController.updateOrderStatus);
+
 module.exports = router;

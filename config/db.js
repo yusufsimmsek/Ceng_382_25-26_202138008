@@ -19,4 +19,9 @@ function query(text, params) {
   return pool.query(text, params);
 }
 
-module.exports = { pool, query };
+// transaction icin client cek
+function getClient() {
+  return pool.connect();
+}
+
+module.exports = { pool, query, getClient };
