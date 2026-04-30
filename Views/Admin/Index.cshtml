@@ -1,28 +1,134 @@
 @{
-    ViewData["Title"] = "Yönetim Paneli";
+    ViewData["Title"] = "Yönetici Paneli";
+    var topCaterers = ViewBag.TopCaterers as List<Sofranet.Controllers.TopCatererRow>
+        ?? new List<Sofranet.Controllers.TopCatererRow>();
+    var recent = ViewBag.RecentOrders as List<Sofranet.Controllers.AdminRecentOrder>
+        ?? new List<Sofranet.Controllers.AdminRecentOrder>();
+
+    string StatusLabel(string s) => s switch
+    {
+        "pending" => "Bekliyor",
+        "preparing" => "Hazırlanıyor",
+        "completed" => "Tamamlandı",
+        "cancelled" => "İptal",
+        _ => s
+    };
 }
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-        <h2 class="mb-2">Yönetim Paneli</h2>
-        <p class="text-muted">Sistem genelinde kullanıcı, caterer ve siparişleri buradan yönetebilirsin.</p>
+<h2 class="mb-1">Yönetici Paneli</h2>
+<p class="text-muted mb-4">Sistem geneli istatistikler ve denetim.</p>
 
-        <div class="row g-3 mt-2">
-            <div class="col-md-3">
-                <a href="/Admin/Users" class="btn btn-outline-primary w-100 py-3">Kullanıcılar</a>
-            </div>
-            <div class="col-md-3">
-                <a href="/Admin/Caterers" class="btn btn-outline-primary w-100 py-3">Cateterlar</a>
-            </div>
-            <div class="col-md-3">
-                <a href="/Admin/Orders" class="btn btn-outline-primary w-100 py-3">Siparişler</a>
-            </div>
-            <div class="col-md-3">
-                <a href="/Admin/Logs" class="btn btn-outline-primary w-100 py-3">Loglar</a>
-            </div>
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">@ViewBag.TotalUsers</div>
+            <div class="stat-label">Müşteri</div>
         </div>
-
-        <hr class="my-4" />
-        <small class="text-muted">Sistem geneli istatistikler ve listeler yakında.</small>
     </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">🍳</div>
+            <div class="stat-value">@ViewBag.TotalCaterers</div>
+            <div class="stat-label">Restoran</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-value">@ViewBag.TotalOrders</div>
+            <div class="stat-label">Toplam Sipariş</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value">@ViewBag.TodayOrders</div>
+            <div class="stat-label">Bugünkü</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value">₺@(((decimal)ViewBag.TotalVolume).ToString("0.00"))</div>
+            <div class="stat-label">Toplam Hacim</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">🍽️</div>
+            <div class="stat-value">@ViewBag.ActiveMenu</div>
+            <div class="stat-label">Aktif Menü</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value">@ViewBag.TotalRatings</div>
+            <div class="stat-label">Değerlendirme</div>
+        </div>
+    </div>
+</div>
+
+@if (topCaterers.Count > 0)
+{
+    <h4 class="mb-3">En Aktif Restoranlar</h4>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>#</th><th>İsim</th><th>Sipariş</th><th>Gelir</th></tr>
+                </thead>
+                <tbody>
+                @{ int rank = 1; }
+                @foreach (var c in topCaterers)
+                {
+                    <tr>
+                        <td>@rank</td>
+                        <td>@c.Name</td>
+                        <td>@c.OrderCount</td>
+                        <td>₺@c.Revenue.ToString("0.00")</td>
+                    </tr>
+                    rank++;
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<h4 class="mb-3">Son 10 Sipariş</h4>
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th><th>Tarih</th><th>Müşteri</th><th>Restoran</th><th>Tutar</th><th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var o in recent)
+            {
+                <tr>
+                    <td>#@o.Id</td>
+                    <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@o.UserName</td>
+                    <td>@o.CatererName</td>
+                    <td>₺@o.TotalAmount.ToString("0.00")</td>
+                    <td><span class="status-badge status-@o.Status">@StatusLabel(o.Status)</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row g-3 mt-4">
+    <div class="col-md-3 col-6"><a href="/Admin/Users" class="quick-card"><h5>👥 Kullanıcılar</h5></a></div>
+    <div class="col-md-3 col-6"><a href="/Admin/Caterers" class="quick-card"><h5>🍳 Restoranlar</h5></a></div>
+    <div class="col-md-3 col-6"><a href="/Admin/Orders" class="quick-card"><h5>📦 Siparişler</h5></a></div>
+    <div class="col-md-3 col-6"><a href="/Admin/Logs" class="quick-card"><h5>📜 Sistem Logları</h5></a></div>
 </div>

@@ -1,27 +1,138 @@
 @{
-    ViewData["Title"] = "Restoran Panel";
+    ViewData["Title"] = "Restoran Paneli";
+    var topItems = ViewBag.TopItems as List<Sofranet.Controllers.TopItemRow>
+        ?? new List<Sofranet.Controllers.TopItemRow>();
+    var recent = ViewBag.RecentOrders as List<Sofranet.Controllers.DashboardRecentOrder>
+        ?? new List<Sofranet.Controllers.DashboardRecentOrder>();
+    var pendingOrders = (int)(ViewBag.PendingOrders ?? 0);
+    var avgRating = ViewBag.AvgRating as decimal?;
+
+    string StatusLabel(string s) => s switch
+    {
+        "pending" => "Bekliyor",
+        "preparing" => "Hazırlanıyor",
+        "completed" => "Tamamlandı",
+        "cancelled" => "İptal",
+        _ => s
+    };
 }
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-        <h2 class="mb-2">Restoran Panel</h2>
-        <p class="text-muted">Menülerini, siparişlerini ve istatistikleri buradan yönetebilirsin.</p>
+<h2 class="mb-1">Restoran Paneli</h2>
+<p class="text-muted mb-4">Restoranını yönet, siparişleri ve istatistikleri takip et.</p>
 
-        <div class="row g-3 mt-2">
-            <div class="col-md-4">
-                <a href="/Caterer/Menu" class="btn btn-primary w-100 py-3">Menü Yönetimi</a>
-            </div>
-            <div class="col-md-4">
-                <a href="/Caterer/Orders" class="btn btn-outline-primary w-100 py-3">Gelen Siparişler</a>
-            </div>
-            <div class="col-md-4">
-                <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-primary w-100 py-3">
-                    Restoran Bilgileri
-                </a>
-            </div>
+@if (pendingOrders > 0)
+{
+    <div class="pending-alert">
+        <span class="alert-text">⏰ @pendingOrders bekleyen siparişin var</span>
+        <a asp-action="Orders" asp-route-status="pending" class="btn btn-warning btn-sm">Siparişleri Gör</a>
+    </div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-value">@ViewBag.TotalOrders</div>
+            <div class="stat-label">Toplam Sipariş</div>
         </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">@ViewBag.CompletedOrders</div>
+            <div class="stat-label">Tamamlanan</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value">
+                @if (avgRating.HasValue)
+                {
+                    <span>@avgRating.Value.ToString("0.0")</span>
+                    <small style="font-size:0.8rem;">(@ViewBag.RatingCount)</small>
+                }
+                else
+                {
+                    <span style="font-size:1.2rem;">-</span>
+                }
+            </div>
+            <div class="stat-label">Ortalama Puan</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value">₺@(((decimal)ViewBag.Revenue).ToString("0.00"))</div>
+            <div class="stat-label">Toplam Gelir</div>
+        </div>
+    </div>
+</div>
 
-        <hr class="my-4" />
-        <small class="text-muted">İstatistikler ve detaylı panel yakında.</small>
+@if (topItems.Count > 0)
+{
+    <h4 class="mb-3">En Çok Satan Ürünler</h4>
+    <div class="row g-3 mb-4">
+        @foreach (var item in topItems)
+        {
+            <div class="col-md-4">
+                <div class="top-item-card">
+                    <img src="@(item.ImagePath ?? "/images/no-image.svg")" alt="@item.Name" />
+                    <h6 class="mb-1">@item.Name</h6>
+                    <div class="top-item-qty">@item.TotalQty adet satıldı</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h4 class="mb-0">Son Siparişler</h4>
+    <a asp-action="Orders" class="btn btn-sm btn-link">Tümünü Gör</a>
+</div>
+
+@if (recent.Count == 0)
+{
+    <div class="text-center py-4 text-muted">
+        <p>Henüz sipariş yok</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>#</th><th>Tarih</th><th>Müşteri</th><th>Tutar</th><th>Durum</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var o in recent)
+                {
+                    <tr>
+                        <td>#@o.Id</td>
+                        <td>@o.CreatedAt.ToString("dd.MM.yyyy")</td>
+                        <td>@o.OtherName</td>
+                        <td>₺@o.TotalAmount.ToString("0.00")</td>
+                        <td><span class="status-badge status-@o.Status">@StatusLabel(o.Status)</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="row g-3 mt-4">
+    <div class="col-md-6">
+        <a asp-action="Menu" class="quick-card">
+            <h5>📋 Menü Yönetimi</h5>
+            <p class="mb-0 text-muted">Menü itemlarını ekle, düzenle ve seçenekleri yönet</p>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a asp-action="Orders" class="quick-card">
+            <h5>🛒 Siparişler</h5>
+            <p class="mb-0 text-muted">Gelen siparişleri görüntüle ve durumlarını güncelle</p>
+        </a>
     </div>
 </div>

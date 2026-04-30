@@ -31,9 +31,68 @@ public class CatererController : Controller
         _logs = logs;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        ViewData["Title"] = "Restoran Panel";
+        var userId = _userManager.GetUserId(User);
+
+        var totalOrders = await _db.Orders.CountAsync(o => o.CatererId == userId);
+        var completedOrders = await _db.Orders
+            .CountAsync(o => o.CatererId == userId && o.Status == "completed");
+        var pendingOrders = await _db.Orders
+            .CountAsync(o => o.CatererId == userId && o.Status == "pending");
+        var revenueList = await _db.Orders
+            .Where(o => o.CatererId == userId && o.Status == "completed")
+            .Select(o => o.TotalAmount)
+            .ToListAsync();
+        var revenue = revenueList.Sum();
+
+        var ratings = await _db.Ratings
+            .Where(r => r.CatererId == userId && r.Order!.Status == "completed")
+            .Select(r => (decimal)r.CatererRating)
+            .ToListAsync();
+        decimal? avgRating = ratings.Count > 0 ? Math.Round(ratings.Average(), 2) : null;
+        int ratingCount = ratings.Count;
+
+        var topItems = await _db.OrderItems
+            .Include(oi => oi.MenuItem)
+            .Where(oi => oi.MenuItem!.CatererId == userId && oi.Order!.Status == "completed")
+            .GroupBy(oi => new { oi.MenuItemId, oi.MenuItem!.Name, oi.MenuItem!.ImagePath })
+            .Select(g => new TopItemRow
+            {
+                MenuItemId = g.Key.MenuItemId,
+                Name = g.Key.Name,
+                ImagePath = g.Key.ImagePath,
+                TotalQty = g.Sum(x => x.Quantity)
+            })
+            .OrderByDescending(x => x.TotalQty)
+            .Take(3)
+            .ToListAsync();
+
+        var recent = await _db.Orders
+            .Where(o => o.CatererId == userId)
+            .Include(o => o.User)
+            .OrderByDescending(o => o.CreatedAt)
+            .Take(5)
+            .Select(o => new DashboardRecentOrder
+            {
+                Id = o.Id,
+                TotalAmount = o.TotalAmount,
+                Status = o.Status,
+                CreatedAt = o.CreatedAt,
+                OtherName = o.User!.FullName
+            })
+            .ToListAsync();
+
+        ViewBag.TotalOrders = totalOrders;
+        ViewBag.CompletedOrders = completedOrders;
+        ViewBag.PendingOrders = pendingOrders;
+        ViewBag.Revenue = revenue;
+        ViewBag.AvgRating = avgRating;
+        ViewBag.RatingCount = ratingCount;
+        ViewBag.TopItems = topItems;
+        ViewBag.RecentOrders = recent;
+
+        ViewData["Title"] = "Restoran Paneli";
         return View();
     }
 
@@ -447,4 +506,12 @@ public class CatererOrderListItem
     public string UserName { get; set; } = "";
     public string UserEmail { get; set; } = "";
     public int ItemCount { get; set; }
+}
+
+public class TopItemRow
+{
+    public int MenuItemId { get; set; }
+    public string Name { get; set; } = "";
+    public string? ImagePath { get; set; }
+    public int TotalQty { get; set; }
 }

@@ -1,31 +1,104 @@
 @{
     ViewData["Title"] = "Panelim";
+    var recent = ViewBag.RecentOrders as List<Sofranet.Controllers.DashboardRecentOrder>
+        ?? new List<Sofranet.Controllers.DashboardRecentOrder>();
+    var lastOrder = ViewBag.LastOrder as DateTime?;
+    string StatusLabel(string s) => s switch
+    {
+        "pending" => "Bekliyor",
+        "preparing" => "Hazırlanıyor",
+        "completed" => "Tamamlandı",
+        "cancelled" => "İptal",
+        _ => s
+    };
 }
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-        <h2 class="mb-2">Hoş geldin, @User.Identity?.Name</h2>
-        <p class="text-muted">Buradan menülere göz atabilir, siparişlerini takip edebilirsin.</p>
+<h2 class="mb-1">Hoş geldin, @User.Identity?.Name!</h2>
+<p class="text-muted mb-4">Sipariş geçmişini ve istatistiklerini buradan görebilirsin.</p>
 
-        <div class="row g-3 mt-2">
-            <div class="col-md-4">
-                <a asp-controller="Menu" asp-action="Index" class="btn btn-primary w-100 py-3">
-                    Menülere Göz At
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-primary w-100 py-3">
-                    Sepetim
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a asp-controller="Order" asp-action="MyOrders" class="btn btn-outline-primary w-100 py-3">
-                    Siparişlerim
-                </a>
-            </div>
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-value">@ViewBag.TotalOrders</div>
+            <div class="stat-label">Toplam Sipariş</div>
         </div>
-
-        <hr class="my-4" />
-        <small class="text-muted">Detaylı dashboard yakında.</small>
     </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">@ViewBag.CompletedOrders</div>
+            <div class="stat-label">Tamamlanan</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">💸</div>
+            <div class="stat-value">₺@(((decimal)ViewBag.TotalSpent).ToString("0.00"))</div>
+            <div class="stat-label">Toplam Harcama</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" style="font-size:1.2rem;">
+                @(lastOrder.HasValue ? lastOrder.Value.ToString("dd.MM.yyyy") : "-")
+            </div>
+            <div class="stat-label">Son Sipariş</div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ViewBag.FavCatererName as string))
+{
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-1">❤️ En sevdiğin restoran:
+                <span style="color:var(--sofra-primary);">@ViewBag.FavCatererName</span>
+            </h5>
+            <small class="text-muted">@ViewBag.FavCatererCount kez sipariş verildi</small>
+        </div>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h4 class="mb-0">Son Siparişler</h4>
+    <a asp-controller="Order" asp-action="MyOrders" class="btn btn-sm btn-link">Tümünü Gör</a>
+</div>
+
+@if (recent.Count == 0)
+{
+    <div class="text-center py-4 text-muted">
+        <div style="font-size:3rem;">🛒</div>
+        <p>Henüz sipariş vermedin</p>
+        <a asp-controller="Menu" asp-action="Index" class="btn btn-primary">Menülere göz at</a>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>#</th><th>Tarih</th><th>Restoran</th><th>Tutar</th><th>Durum</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var o in recent)
+                {
+                    <tr>
+                        <td>#@o.Id</td>
+                        <td>@o.CreatedAt.ToString("dd.MM.yyyy")</td>
+                        <td>@o.OtherName</td>
+                        <td>₺@o.TotalAmount.ToString("0.00")</td>
+                        <td><span class="status-badge status-@o.Status">@StatusLabel(o.Status)</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="text-center mt-4">
+    <a asp-controller="Menu" asp-action="Index" class="btn btn-primary btn-lg">Yeni Sipariş Ver</a>
 </div>

@@ -1,0 +1,80 @@
+@model RateOrderViewModel
+@{
+    ViewData["Title"] = "Siparişini Değerlendir";
+}
+
+<h2 class="mb-4">Siparişini Değerlendir</h2>
+
+<div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <small class="text-muted">Sipariş No</small>
+                <div><strong>#@Model.OrderId</strong></div>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted">Tarih</small>
+                <div>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</div>
+            </div>
+        </div>
+        <div class="mt-2">
+            <small class="text-muted">Restoran</small>
+            <div>@Model.CatererName</div>
+        </div>
+        @if (Model.ItemNames.Any())
+        {
+            <div class="mt-2">
+                <small class="text-muted">Ürünler</small>
+                <ul class="mb-0">
+                    @foreach (var n in Model.ItemNames) { <li>@n</li> }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<form asp-action="Rate" method="post">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.OrderId)
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small d-none-if-empty"></div>
+
+    <div class="rating-section">
+        <h5>Yemek nasıldı?</h5>
+        <div class="star-rating" data-target="MenuRating">
+            @for (int i = 1; i <= 5; i++)
+            {
+                <span class="star" data-value="@i">★</span>
+            }
+        </div>
+        <input type="hidden" name="MenuRating" id="MenuRating" value="0" />
+        <span asp-validation-for="MenuRating" class="text-danger small"></span>
+        <div class="rating-label" id="MenuRatingLabel"></div>
+    </div>
+
+    <div class="rating-section">
+        <h5>Restoranı genel olarak nasıl buldun?</h5>
+        <div class="star-rating" data-target="CatererRating">
+            @for (int i = 1; i <= 5; i++)
+            {
+                <span class="star" data-value="@i">★</span>
+            }
+        </div>
+        <input type="hidden" name="CatererRating" id="CatererRating" value="0" />
+        <span asp-validation-for="CatererRating" class="text-danger small"></span>
+        <div class="rating-label" id="CatererRatingLabel"></div>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label class="form-label">Yorumun (isteğe bağlı)</label>
+        <textarea asp-for="Comment" class="form-control" rows="3" maxlength="500"
+                  placeholder="Sipariş hakkında deneyimini paylaş..."></textarea>
+        <span asp-validation-for="Comment" class="text-danger small"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">Değerlendirmeyi Gönder</button>
+    <a asp-controller="Order" asp-action="MyOrders" class="btn btn-link">İptal</a>
+</form>
+
+@section Scripts {
+    <script src="~/js/rating.js" asp-append-version="true"></script>
+}
