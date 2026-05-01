@@ -85,6 +85,16 @@ sofranet/
 └── utils/                 # Yardımcı fonksiyonlar
 ```
 
+## Email Test Etmek
+
+SMTP credentials yoksa email gönderilmez ama uygulama crash etmez (graceful degradation).
+
+Test için seçenekler:
+
+- **Mailtrap** (önerilen, free tier yeterli): mailtrap.io üzerinden bir inbox aç, sandbox SMTP credentials'larını `.env`'e yaz.
+- **Gmail**: 2FA açıkken App Password üret, `SMTP_USER` ve `SMTP_PASS`'a yaz. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`.
+- **Local maildev**: `npm install -g maildev` ile kur, `maildev` komutu ile başlat. `.env`'de `SMTP_HOST=localhost`, `SMTP_PORT=1025`, user/pass boş bırakılabilir (maildev auth aramaz; yine de boş geçemediğin için dummy değer kullanabilirsin).
+
 ## Notlar
 
 - Ödeme tamamen simüle edilmiştir, gerçek kart bilgisi kullanılmamalıdır.

@@ -1,6 +1,7 @@
 // order controller - siparis olusturma + listeleme
 const db = require('../config/db');
 const { enrichCart } = require('../utils/cartHelper');
+const emailService = require('../services/emailService');
 
 async function create(req, res) {
   // payment + sepet kontrolu
@@ -64,8 +65,35 @@ async function create(req, res) {
     delete req.session.deliveryInfo;
     delete req.session.pendingItem;
 
-    // TODO: Faz 7 - email ve PDF generation
-    console.log('TODO: Send email to user and caterer for order', orderId);
+    // email gonderimi - user ve caterer bilgilerini cek
+    try {
+      const usrRes = await db.query(
+        'SELECT name, email, phone FROM users WHERE id = $1',
+        [userId]
+      );
+      const catRes = await db.query(
+        'SELECT name, email, phone FROM users WHERE id = $1',
+        [catererId]
+      );
+      const user = usrRes.rows[0];
+      const caterer = catRes.rows[0];
+
+      const orderObj = {
+        id: orderId,
+        total_amount: total,
+        delivery_address: delivery.address || null,
+        created_at: new Date()
+      };
+
+      // cartItems zaten enrich edilmis (basePrice, extras, options, removals dolu)
+      await emailService.sendOrderConfirmationToUser(user, orderObj, cartItems, caterer);
+      await emailService.sendOrderNotificationToCaterer(caterer, user, orderObj, cartItems);
+      console.log('LOG: EMAIL_SENT user=', user.email, 'caterer=', caterer.email, 'order=', orderId);
+    } catch (e) {
+      console.error('email gonderim hata (order proceeds):', e.message);
+    }
+
+    // TODO: Faz 7 - PDF generation
     console.log('TODO: Generate receipt and agreement PDFs for order', orderId);
     // TODO: Faz 10 - logging tablosuna yaz
     console.log('LOG: ORDER_CREATED user=', userId, 'order=', orderId);
