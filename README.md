@@ -95,6 +95,15 @@ Test için seçenekler:
 - **Gmail**: 2FA açıkken App Password üret, `SMTP_USER` ve `SMTP_PASS`'a yaz. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`.
 - **Local maildev**: `npm install -g maildev` ile kur, `maildev` komutu ile başlat. `.env`'de `SMTP_HOST=localhost`, `SMTP_PORT=1025`, user/pass boş bırakılabilir (maildev auth aramaz; yine de boş geçemediğin için dummy değer kullanabilirsin).
 
+## PDF Türkçe Karakter Desteği
+
+PDF makbuzlarda Türkçe karakterler (ş, ğ, ı, ç, ö, ü) düzgün gözükmesi için Roboto fontunu indirebilirsin:
+
+1. Google Fonts → Roboto sayfasından `Roboto-Regular.ttf` ve `Roboto-Bold.ttf` dosyalarını indir.
+2. Bu iki dosyayı `public/fonts/` klasörüne koy.
+
+Bu fontlar olmazsa PDFKit default Helvetica kullanır; bu durumda kodda ASCII karşılıkları (örn. "Hazirlaniyor") kullanılır, çalışır ama Türkçe karakterler yarım kalır.
+
 ## Notlar
 
 - Ödeme tamamen simüle edilmiştir, gerçek kart bilgisi kullanılmamalıdır.

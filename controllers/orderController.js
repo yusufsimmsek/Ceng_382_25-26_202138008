@@ -1,7 +1,9 @@
 // order controller - siparis olusturma + listeleme
 const db = require('../config/db');
 const { enrichCart } = require('../utils/cartHelper');
+const { fetchOrderFull } = require('../utils/orderHelper');
 const emailService = require('../services/emailService');
+const pdfService = require('../services/pdfService');
 
 async function create(req, res) {
   // payment + sepet kontrolu
@@ -111,47 +113,13 @@ async function create(req, res) {
   }
 }
 
-// own order kontrolu ile order'i detayli cek
-async function fetchOrderForUser(orderId, userId) {
-  const r = await db.query(
-    `SELECT o.*, u.name as caterer_name
-     FROM orders o JOIN users u ON u.id = o.caterer_id
-     WHERE o.id = $1 AND o.user_id = $2`,
-    [orderId, userId]
-  );
-  if (r.rows.length === 0) return null;
-  const order = r.rows[0];
-
-  const items = await db.query(
-    `SELECT oi.*, mi.name as menu_name, mi.image_path
-     FROM order_items oi
-     LEFT JOIN menu_items mi ON mi.id = oi.menu_item_id
-     WHERE oi.order_id = $1
-     ORDER BY oi.id`,
-    [orderId]
-  );
-
-  for (const it of items.rows) {
-    const optRes = await db.query(
-      `SELECT o.id, o.name, o.extra_price, og.name as group_name
-       FROM order_item_options oio
-       JOIN options o ON o.id = oio.option_id
-       JOIN option_groups og ON og.id = o.group_id
-       WHERE oio.order_item_id = $1`,
-      [it.id]
-    );
-    it.options = optRes.rows;
-
-    const remRes = await db.query(
-      `SELECT r.id, r.name FROM order_item_removals oir
-       JOIN removable_ingredients r ON r.id = oir.removable_ingredient_id
-       WHERE oir.order_item_id = $1`,
-      [it.id]
-    );
-    it.removals = remRes.rows;
-  }
-
-  return { order, items: items.rows };
+// ownership: user kendi siparisi / caterer kendi siparisi / admin
+function canAccessOrder(order, sessionUser) {
+  if (!sessionUser || !order) return false;
+  if (sessionUser.role === 'admin') return true;
+  if (sessionUser.role === 'user' && order.user_id === sessionUser.id) return true;
+  if (sessionUser.role === 'caterer' && order.caterer_id === sessionUser.id) return true;
+  return false;
 }
 
 async function successPage(req, res) {
@@ -159,19 +127,56 @@ async function successPage(req, res) {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) return res.status(404).send('Sipariş bulunamadı');
 
-    const data = await fetchOrderForUser(id, req.session.user.id);
-    if (!data) {
+    const data = await fetchOrderFull(id);
+    if (!data || data.order.user_id !== req.session.user.id) {
       return res.status(404).send('Sipariş bulunamadı');
     }
 
+    // success view'inin kullandigi item format orderHelper.js'tekiyle uyumlu olsun
+    // (item.name, item.options[].group_name+name+extra_price, item.removals[].name, item_price, customization_extra)
+    const items = data.items.map((it) => ({
+      id: it.id,
+      menu_name: it.name,
+      quantity: it.quantity,
+      item_price: it.basePrice,
+      customization_extra: it.customizationExtra,
+      options: it.options.map(o => ({
+        group_name: o.groupName,
+        name: o.name,
+        extra_price: o.extra
+      })),
+      removals: it.removals
+    }));
+
     res.render('user/order-success', {
       title: 'Sipariş #' + id,
-      order: data.order,
-      items: data.items
+      order: { ...data.order, caterer_name: data.caterer.name },
+      items
     });
   } catch (err) {
     console.error('order success error:', err);
     res.status(500).send('Sipariş yüklenemedi');
+  }
+}
+
+async function downloadReceipt(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(404).send('Sipariş bulunamadi');
+
+    const data = await fetchOrderFull(id);
+    if (!data || !canAccessOrder(data.order, req.session.user)) {
+      return res.status(404).send('Sipariş bulunamadi');
+    }
+
+    const buffer = await pdfService.generateReceipt(data.order, data.items, data.user, data.caterer);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="sofranet-makbuz-${id}.pdf"`);
+    res.send(buffer);
+  } catch (err) {
+    console.error('receipt download error:', err);
+    res.status(500).send('Makbuz uretilemedi');
   }
 }
 
@@ -198,4 +203,4 @@ async function myOrders(req, res) {
   }
 }
 
-module.exports = { create, successPage, myOrders };
+module.exports = { create, successPage, myOrders, downloadReceipt };
