@@ -10,7 +10,8 @@ router.post('/orders/create', requireRole('user'), orderController.create);
 router.get('/orders', requireRole('user'), orderController.myOrders);
 router.get('/orders/:id/success', requireRole('user'), orderController.successPage);
 
-// makbuz - user/caterer/admin (ownership kontrol controller icinde)
+// makbuz + sozlesme - user/caterer/admin (ownership kontrol controller icinde)
 router.get('/orders/:id/receipt', orderController.downloadReceipt);
+router.get('/orders/:id/agreement', orderController.downloadAgreement);
 
 module.exports = router;

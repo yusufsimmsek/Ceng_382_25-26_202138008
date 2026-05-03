@@ -67,8 +67,10 @@
     </div>
 
     <div class="d-flex gap-2 flex-wrap">
-      <a href="/orders/<%= order.id %>/receipt" class="btn btn-outline-primary">📄 Makbuzu İndir</a>
-      <a href="/orders/<%= order.id %>/agreement" class="btn btn-outline-primary">📋 Sözleşmeyi İndir</a>
+      <a href="/orders/<%= order.id %>/receipt" class="btn btn-outline-primary"
+         title="PDF olarak indir">📄 Makbuzu İndir</a>
+      <a href="/orders/<%= order.id %>/agreement" class="btn btn-outline-primary"
+         title="Sipariş sözleşmesinin PDF kopyası">📋 Sözleşmeyi İndir</a>
       <a href="/orders" class="btn btn-primary ms-auto">Siparişlerime Git</a>
     </div>
 

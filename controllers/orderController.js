@@ -180,6 +180,27 @@ async function downloadReceipt(req, res) {
   }
 }
 
+async function downloadAgreement(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(404).send('Sipariş bulunamadi');
+
+    const data = await fetchOrderFull(id);
+    if (!data || !canAccessOrder(data.order, req.session.user)) {
+      return res.status(404).send('Sipariş bulunamadi');
+    }
+
+    const buffer = await pdfService.generateAgreement(data.order, data.items, data.user, data.caterer);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="sofranet-sozlesme-${id}.pdf"`);
+    res.send(buffer);
+  } catch (err) {
+    console.error('agreement download error:', err);
+    res.status(500).send('Sözleşme üretilemedi');
+  }
+}
+
 async function myOrders(req, res) {
   try {
     const result = await db.query(
@@ -203,4 +224,4 @@ async function myOrders(req, res) {
   }
 }
 
-module.exports = { create, successPage, myOrders, downloadReceipt };
+module.exports = { create, successPage, myOrders, downloadReceipt, downloadAgreement };
