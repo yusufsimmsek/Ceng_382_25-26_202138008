@@ -143,6 +143,53 @@ a:hover {
     box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
 }
 
+/* Admin: role badges + log styling */
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+.role-admin { background: #f8d7da; color: #842029; }
+.role-caterer { background: #cfe2ff; color: #084298; }
+.role-user { background: #d1e7dd; color: #0a3622; }
+.role-- { background: #e9ecef; color: #495057; }
+
+.log-row { font-size: 0.9rem; }
+.log-date {
+    white-space: nowrap;
+    color: var(--sofra-muted);
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 0.83rem;
+}
+.log-action {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.log-action-success { background: #d1e7dd; color: #0a3622; }
+.log-action-error { background: #f8d7da; color: #842029; }
+.log-action-info { background: #cfe2ff; color: #084298; }
+.log-action-default { background: #e9ecef; color: #495057; }
+.log-details {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: #495057;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.log-ip {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 0.83rem;
+    color: var(--sofra-muted);
+}
+
 /* Dashboard stat cards */
 .stat-card {
     background: #fff;

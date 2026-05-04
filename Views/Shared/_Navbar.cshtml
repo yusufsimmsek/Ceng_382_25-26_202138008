@@ -25,8 +25,18 @@
 
                 @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Admin" asp-action="Index">Yönetim</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Yönetim
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">Kullanıcılar</a></li>
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Caterers">Restoranlar</a></li>
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Orders">Siparişler</a></li>
+                            <li><a class="dropdown-item" asp-controller="Admin" asp-action="Logs">Loglar</a></li>
+                        </ul>
                     </li>
                 }
                 @if (SignInManager.IsSignedIn(User) && User.IsInRole("Caterer"))

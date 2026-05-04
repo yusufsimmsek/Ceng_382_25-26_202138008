@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Sistem Logları";
+    var logs = ViewBag.Logs as List<Sofranet.Controllers.AdminLogRow>
+        ?? new List<Sofranet.Controllers.AdminLogRow>();
+    var actions = ViewBag.Actions as List<string> ?? new List<string>();
+    var actionFilter = ViewBag.ActionFilter as string;
+    var q = ViewBag.Query as string;
+    var ip = ViewBag.IpFilter as string;
+    var df = ViewBag.DateFrom as string;
+    var dt = ViewBag.DateTo as string;
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var totalPages = (int)(ViewBag.TotalPages ?? 1);
+    var total = (int)(ViewBag.Total ?? 0);
+
+    string ActionClass(string a)
+    {
+        if (new[] { "LOGIN_SUCCESS", "USER_REGISTERED" }.Contains(a)) return "log-action-success";
+        if (new[] { "LOGIN_FAIL", "PAYMENT_FAILED", "EMAIL_FAILED", "ERROR" }.Contains(a)) return "log-action-error";
+        if (a.StartsWith("ORDER_") || a.StartsWith("MENU_") || a.StartsWith("RATING_") || a.StartsWith("PROFILE_")) return "log-action-info";
+        return "log-action-default";
+    }
+}
+
+<h2 class="mb-1">Sistem Logları</h2>
+<p class="text-muted mb-3">Toplam @total log kaydı</p>
+
+
+<div class="filter-bar">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-2">
+            <select name="actionType" class="form-select">
+                <option value="">Tüm Aksiyonlar</option>
+                @foreach (var a in actions)
+                {
+                    <option value="@a" selected="@(actionFilter == a)">@a</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="q" value="@q" class="form-control" placeholder="Kullanıcı..." />
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="ip" value="@ip" class="form-control" placeholder="IP..." />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="dateFrom" value="@df" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="dateTo" value="@dt" class="form-control" />
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrele</button>
+            <a asp-action="Logs" class="btn btn-link btn-sm">Temizle</a>
+        </div>
+    </form>
+</div>
+
+<div class="card border-0 shadow-sm mt-3">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped log-row mb-0">
+            <thead class="table-light">
+                <tr><th>Tarih</th><th>Aksiyon</th><th>Kullanıcı</th><th>IP</th><th>Detay</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var l in logs)
+            {
+                <tr>
+                    <td class="log-date">@l.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td><span class="log-action @ActionClass(l.Action)">@l.Action</span></td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(l.UserEmail))
+                        {
+                            <small>@l.UserEmail</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">anonim</small>
+                        }
+                    </td>
+                    <td class="log-ip">@(string.IsNullOrEmpty(l.IpAddress) ? "-" : l.IpAddress)</td>
+                    <td class="log-details" title="@l.Details">
+                        @(l.Details.Length > 60 ? l.Details.Substring(0, 60) + "..." : l.Details)
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (totalPages > 1)
+{
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center mb-0">
+            @if (currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Logs"
+                       asp-route-actionType="@actionFilter" asp-route-q="@q" asp-route-ip="@ip"
+                       asp-route-dateFrom="@df" asp-route-dateTo="@dt"
+                       asp-route-page="@(currentPage - 1)">Önceki</a>
+                </li>
+            }
+            <li class="page-item active"><span class="page-link">@(currentPage) / @totalPages</span></li>
+            @if (currentPage < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Logs"
+                       asp-route-actionType="@actionFilter" asp-route-q="@q" asp-route-ip="@ip"
+                       asp-route-dateFrom="@df" asp-route-dateTo="@dt"
+                       asp-route-page="@(currentPage + 1)">Sonraki</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
