@@ -41,6 +41,8 @@
                 <a href="/orders/<%= o.id %>/agreement" class="btn btn-sm btn-outline-secondary" title="Sözleşmeyi indir">📋</a>
                 <% if (o.status === 'completed' && !o.has_rating) { %>
                   <a href="/orders/<%= o.id %>/rate" class="btn btn-sm btn-outline-primary">Değerlendir</a>
+                <% } else if (o.has_rating) { %>
+                  <span class="rated-badge">Değerlendirildi ✓</span>
                 <% } %>
               </td>
             </tr>
