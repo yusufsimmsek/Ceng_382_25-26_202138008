@@ -1,6 +1,48 @@
-// user controller - profile, lokasyon vb.
+// user controller - dashboard, profile, lokasyon vb.
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+
+async function dashboard(req, res) {
+  try {
+    const userId = req.session.user.id;
+
+    const statsRes = await db.query(
+      `SELECT
+        (SELECT COUNT(*) FROM orders WHERE user_id = $1) as total_orders,
+        (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE user_id = $1 AND status != 'cancelled') as total_spent,
+        (SELECT COUNT(*) FROM orders WHERE user_id = $1 AND status = 'completed') as completed_orders,
+        (SELECT MAX(created_at) FROM orders WHERE user_id = $1) as last_order_date`,
+      [userId]
+    );
+
+    const favRes = await db.query(
+      `SELECT u.id, u.name, COUNT(o.id) as cnt
+       FROM orders o JOIN users u ON u.id = o.caterer_id
+       WHERE o.user_id = $1
+       GROUP BY u.id, u.name
+       ORDER BY cnt DESC LIMIT 1`,
+      [userId]
+    );
+
+    const recentRes = await db.query(
+      `SELECT o.id, o.total_amount, o.status, o.created_at, u.name as caterer_name
+       FROM orders o JOIN users u ON u.id = o.caterer_id
+       WHERE o.user_id = $1
+       ORDER BY o.created_at DESC LIMIT 5`,
+      [userId]
+    );
+
+    res.render('user/dashboard', {
+      title: 'Dashboard',
+      stats: statsRes.rows[0],
+      recentOrders: recentRes.rows,
+      favoriteCaterer: favRes.rows[0] || null
+    });
+  } catch (err) {
+    console.error('user dashboard error:', err);
+    res.status(500).send('Dashboard yüklenemedi');
+  }
+}
 
 async function profile(req, res) {
   try {
@@ -88,4 +130,4 @@ async function updateAddress(req, res) {
   }
 }
 
-module.exports = { profile, updateLocation, updateAddress };
+module.exports = { dashboard, profile, updateLocation, updateAddress };
