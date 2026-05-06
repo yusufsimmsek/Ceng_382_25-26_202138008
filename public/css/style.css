@@ -370,6 +370,44 @@ tr.inactive {
   font-size: 0.85rem;
 }
 
+/* caterer dashboard */
+.pending-alert {
+  background: linear-gradient(135deg, #fff3cd, #ffe69c);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pending-alert .alert-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #856404;
+}
+.top-item-card {
+  text-align: center;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.top-item-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.top-item-qty {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
 /* menu detail */
 .menu-detail-image {
   width: 100%;

@@ -6,15 +6,47 @@ const locationService = require('../services/locationService');
 
 async function dashboard(req, res) {
   try {
-    // TODO: gercek istatistikleri DB'den cek (faz 9)
-    const stats = {
-      totalOrders: 0,
-      completed: 0,
-      avgRating: null,
-      revenue: 0
-    };
+    const catererId = req.session.user.id;
 
-    res.render('caterer/dashboard', { title: 'Dashboard', stats });
+    const statsRes = await db.query(
+      `SELECT
+        (SELECT COUNT(*) FROM orders WHERE caterer_id = $1) as total_orders,
+        (SELECT COUNT(*) FROM orders WHERE caterer_id = $1 AND status = 'completed') as completed_orders,
+        (SELECT COUNT(*) FROM orders WHERE caterer_id = $1 AND status = 'pending') as pending_orders,
+        (SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE caterer_id = $1 AND status = 'completed') as total_revenue,
+        (SELECT AVG(caterer_rating)::numeric(3,2) FROM ratings r JOIN orders o ON o.id = r.order_id
+           WHERE r.caterer_id = $1 AND o.status = 'completed') as avg_rating,
+        (SELECT COUNT(*) FROM ratings r JOIN orders o ON o.id = r.order_id
+           WHERE r.caterer_id = $1 AND o.status = 'completed') as rating_count`,
+      [catererId]
+    );
+    const stats = statsRes.rows[0];
+
+    const topRes = await db.query(
+      `SELECT mi.id, mi.name, mi.image_path, SUM(oi.quantity) as total_qty
+       FROM order_items oi
+       JOIN menu_items mi ON mi.id = oi.menu_item_id
+       JOIN orders o ON o.id = oi.order_id
+       WHERE mi.caterer_id = $1 AND o.status = 'completed'
+       GROUP BY mi.id, mi.name, mi.image_path
+       ORDER BY total_qty DESC LIMIT 3`,
+      [catererId]
+    );
+
+    const recentRes = await db.query(
+      `SELECT o.id, o.total_amount, o.status, o.created_at, u.name as user_name
+       FROM orders o JOIN users u ON u.id = o.user_id
+       WHERE o.caterer_id = $1
+       ORDER BY o.created_at DESC LIMIT 5`,
+      [catererId]
+    );
+
+    res.render('caterer/dashboard', {
+      title: 'Dashboard',
+      stats,
+      topItems: topRes.rows,
+      recentOrders: recentRes.rows
+    });
   } catch (err) {
     console.error('caterer dashboard error:', err);
     res.status(500).send('Sunucu hatasi');
