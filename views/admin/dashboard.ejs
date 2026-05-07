@@ -1,0 +1,124 @@
+<div class="mt-3">
+  <h2 class="mb-1">Admin Dashboard</h2>
+  <p class="text-muted mb-4">Sofranet sistem geneli istatistikleri</p>
+
+  <% var statusLabels = { pending:'Bekliyor', preparing:'Hazırlanıyor', completed:'Tamamlandı', cancelled:'İptal' }; %>
+
+  <div class="row g-3">
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value"><%= stats.total_users %></div>
+        <div class="stat-label">Toplam Kullanıcı</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">🍳</div>
+        <div class="stat-value"><%= stats.total_caterers %></div>
+        <div class="stat-label">Toplam Caterer</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">📦</div>
+        <div class="stat-value"><%= stats.total_orders %></div>
+        <div class="stat-label">Toplam Sipariş</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value"><%= stats.today_orders %></div>
+        <div class="stat-label">Bugünkü Sipariş</div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value">₺<%= Number(stats.total_volume).toFixed(2) %></div>
+        <div class="stat-label">Toplam Hacim</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">🍽️</div>
+        <div class="stat-value"><%= stats.active_menu_items %></div>
+        <div class="stat-label">Aktif Menü</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <div class="stat-card text-center">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value"><%= stats.total_ratings %></div>
+        <div class="stat-label">Toplam Değerlendirme</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-4 mb-2">En Aktif Restoranlar</h4>
+  <% if (!topCaterers || topCaterers.length === 0) { %>
+    <p class="text-muted">Henüz veri yok.</p>
+  <% } else { %>
+    <div class="card shadow-sm border-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>#</th><th>İsim</th><th>Email</th>
+              <th>Sipariş Sayısı</th><th>Toplam Gelir</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% topCaterers.forEach(function(c, i){ %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><%= c.name %></td>
+                <td><%= c.email %></td>
+                <td><%= c.order_count %></td>
+                <td>₺<%= Number(c.revenue).toFixed(2) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="mt-4 d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Son Siparişler</h4>
+    <a href="/admin/orders" class="small">Tümünü gör →</a>
+  </div>
+  <% if (!recentOrders || recentOrders.length === 0) { %>
+    <p class="text-muted mt-2">Henüz sipariş yok.</p>
+  <% } else { %>
+    <div class="card shadow-sm border-0 mt-2">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>#</th><th>Tarih</th><th>Müşteri</th>
+              <th>Caterer</th><th>Tutar</th><th>Durum</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentOrders.forEach(function(o){ %>
+              <tr>
+                <td>#<%= o.id %></td>
+                <td><%= new Date(o.created_at).toLocaleDateString('tr-TR') %></td>
+                <td>
+                  <%= o.user_name %>
+                  <div class="small text-muted"><%= o.user_email %></div>
+                </td>
+                <td><%= o.caterer_name %></td>
+                <td>₺<%= Number(o.total_amount).toFixed(2) %></td>
+                <td><span class="status-badge status-<%= o.status %>"><%= statusLabels[o.status] || o.status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+</div>

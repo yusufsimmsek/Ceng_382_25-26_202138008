@@ -1,0 +1,55 @@
+<%
+// expected locals: pagination {page, totalPages, total}, baseUrl, currentQuery
+function pageLink(p) {
+  var q = Object.assign({}, currentQuery || {}, { page: p });
+  var params = new URLSearchParams();
+  Object.keys(q).forEach(function(k){
+    if (q[k] != null && q[k] !== '') params.append(k, q[k]);
+  });
+  return baseUrl + '?' + params.toString();
+}
+
+var current = pagination.page;
+var total = pagination.totalPages;
+%>
+
+<% if (total > 1) { %>
+  <nav class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item <%= current === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= current === 1 ? '#' : pageLink(current - 1) %>">Önceki</a>
+      </li>
+
+      <%
+        var start = Math.max(1, current - 2);
+        var end = Math.min(total, current + 2);
+        if (start > 1) {
+      %>
+        <li class="page-item"><a class="page-link" href="<%= pageLink(1) %>">1</a></li>
+        <% if (start > 2) { %>
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+        <% } %>
+      <% } %>
+
+      <% for (var p = start; p <= end; p++) { %>
+        <li class="page-item <%= p === current ? 'active' : '' %>">
+          <a class="page-link" href="<%= pageLink(p) %>"><%= p %></a>
+        </li>
+      <% } %>
+
+      <% if (end < total) { %>
+        <% if (end < total - 1) { %>
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+        <% } %>
+        <li class="page-item"><a class="page-link" href="<%= pageLink(total) %>"><%= total %></a></li>
+      <% } %>
+
+      <li class="page-item <%= current === total ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= current === total ? '#' : pageLink(current + 1) %>">Sonraki</a>
+      </li>
+    </ul>
+    <p class="text-center small text-muted">
+      Toplam <%= pagination.total %> kayıt - Sayfa <%= current %> / <%= total %>
+    </p>
+  </nav>
+<% } %>

@@ -1,0 +1,75 @@
+<h2 class="mt-3 mb-3">Tüm Siparişler</h2>
+
+<% var statusLabels = { pending:'Bekliyor', preparing:'Hazırlanıyor', completed:'Tamamlandı', cancelled:'İptal' }; %>
+
+<div class="filter-bar">
+  <form method="GET" action="/admin/orders" class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label small">Durum</label>
+      <select name="status" class="form-select">
+        <option value="">Tümü</option>
+        <% ['pending','preparing','completed','cancelled'].forEach(function(s){ %>
+          <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>>
+            <%= statusLabels[s] %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small">Tarih Başlangıç</label>
+      <input type="date" name="date_from" class="form-control" value="<%= filters.date_from %>">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small">Tarih Bitiş</label>
+      <input type="date" name="date_to" class="form-control" value="<%= filters.date_to %>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small">Ara</label>
+      <input type="text" name="q" class="form-control" value="<%= filters.q %>" placeholder="müşteri / caterer">
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Filtrele</button>
+      <a href="/admin/orders" class="btn btn-outline-secondary">x</a>
+    </div>
+  </form>
+</div>
+
+<% if (!orders || orders.length === 0) { %>
+  <div class="empty-state text-center p-5">
+    <p class="text-muted mb-0">Sonuç bulunamadı.</p>
+  </div>
+<% } else { %>
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>#</th><th>Tarih</th><th>Müşteri</th><th>Caterer</th>
+            <th>Tutar</th><th>Durum</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(function(o){ %>
+            <tr>
+              <td>#<%= o.id %></td>
+              <td><%= new Date(o.created_at).toLocaleDateString('tr-TR') %></td>
+              <td>
+                <%= o.user_name %>
+                <div class="small text-muted"><%= o.user_email %></div>
+              </td>
+              <td><%= o.caterer_name %></td>
+              <td>₺<%= Number(o.total_amount).toFixed(2) %></td>
+              <td><span class="status-badge status-<%= o.status %>"><%= statusLabels[o.status] || o.status %></span></td>
+              <td>
+                <a href="/orders/<%= o.id %>/receipt" class="btn btn-sm btn-outline-secondary" title="Makbuz">📄</a>
+                <a href="/orders/<%= o.id %>/agreement" class="btn btn-sm btn-outline-secondary" title="Sözleşme">📋</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <%- include('../partials/pagination', { pagination, currentQuery, baseUrl: '/admin/orders' }) %>
+<% } %>

@@ -408,6 +408,19 @@ tr.inactive {
   font-size: 1.1rem;
 }
 
+/* admin role badge */
+.role-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.role-admin { background: #f8d7da; color: #842029; }
+.role-caterer { background: #cfe2ff; color: #084298; }
+.role-user { background: #d1e7dd; color: #0a3622; }
+
 /* menu detail */
 .menu-detail-image {
   width: 100%;
