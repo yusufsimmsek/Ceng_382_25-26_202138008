@@ -15,6 +15,7 @@ public class AccountController : Controller
     private readonly ApplicationDbContext _db;
     private readonly ILocationService _location;
     private readonly ILogService _logs;
+    private readonly IEmailService _email;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
@@ -23,6 +24,7 @@ public class AccountController : Controller
         ApplicationDbContext db,
         ILocationService location,
         ILogService logs,
+        IEmailService email,
         ILogger<AccountController> logger)
     {
         _userManager = userManager;
@@ -30,6 +32,7 @@ public class AccountController : Controller
         _db = db;
         _location = location;
         _logs = logs;
+        _email = email;
         _logger = logger;
     }
 
@@ -111,6 +114,17 @@ public class AccountController : Controller
         }
 
         var result = await _signInManager.PasswordSignInAsync(user, vm.Password, vm.RememberMe, lockoutOnFailure: false);
+
+        // 2FA gerekli ise email ile kod gönder, doğrulama sayfasına yönlendir
+        if (result.RequiresTwoFactor)
+        {
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            await _email.SendTwoFactorCodeAsync(user, code);
+            await _logs.LogAsync(HttpContext, "2FA_CODE_SENT", $"user_id={user.Id}", user.Id);
+            return RedirectToAction(nameof(LoginWithTwoFactor),
+                new { rememberMe = vm.RememberMe, returnUrl });
+        }
+
         if (!result.Succeeded)
         {
             await _logs.LogAsync(HttpContext, "LOGIN_FAIL", $"email={vm.Email} reason=wrong_password", user.Id);
@@ -118,7 +132,7 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        await _logs.LogAsync(HttpContext, "LOGIN_SUCCESS", $"user_id={user.Id}", user.Id);
+        await _logs.LogAsync(HttpContext, "LOGIN_SUCCESS", $"user_id={user.Id} 2fa=false", user.Id);
 
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);
@@ -127,6 +141,99 @@ public class AccountController : Controller
         if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
         if (roles.Contains("Caterer")) return RedirectToAction("Index", "Caterer");
         return RedirectToAction("Index", "User");
+    }
+
+    // === 2FA ===
+    [HttpGet]
+    public async Task<IActionResult> LoginWithTwoFactor(bool rememberMe, string? returnUrl = null)
+    {
+        var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "Önce giriş yap";
+            return RedirectToAction(nameof(Login));
+        }
+        ViewData["BodyClass"] = "auth-page";
+        ViewData["Title"] = "İki Adımlı Doğrulama";
+        return View(new TwoFactorViewModel { RememberMe = rememberMe, ReturnUrl = returnUrl });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LoginWithTwoFactor(TwoFactorViewModel vm)
+    {
+        ViewData["BodyClass"] = "auth-page";
+        ViewData["Title"] = "İki Adımlı Doğrulama";
+        if (!ModelState.IsValid) return View(vm);
+
+        var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "Önce giriş yap";
+            return RedirectToAction(nameof(Login));
+        }
+
+        var code = (vm.Code ?? string.Empty).Trim();
+        var result = await _signInManager.TwoFactorSignInAsync("Email", code, vm.RememberMe, rememberClient: false);
+
+        if (!result.Succeeded)
+        {
+            await _logs.LogAsync(HttpContext, "2FA_FAIL", $"user_id={user.Id}", user.Id);
+            ModelState.AddModelError(string.Empty, "Kod yanlış veya süresi dolmuş");
+            return View(vm);
+        }
+
+        await _logs.LogAsync(HttpContext, "LOGIN_SUCCESS", $"user_id={user.Id} 2fa=true", user.Id);
+
+        if (!string.IsNullOrWhiteSpace(vm.ReturnUrl) && Url.IsLocalUrl(vm.ReturnUrl))
+            return Redirect(vm.ReturnUrl);
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
+        if (roles.Contains("Caterer")) return RedirectToAction("Index", "Caterer");
+        return RedirectToAction("Index", "User");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendTwoFactorCode()
+    {
+        var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "Oturum yok";
+            return RedirectToAction(nameof(Login));
+        }
+        var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+        await _email.SendTwoFactorCodeAsync(user, code);
+        await _logs.LogAsync(HttpContext, "2FA_CODE_RESENT", $"user_id={user.Id}", user.Id);
+        TempData["SuccessMessage"] = "Yeni kod gönderildi";
+        return RedirectToAction(nameof(LoginWithTwoFactor), new { rememberMe = false });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> ToggleTwoFactor()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction(nameof(Login));
+
+        var newState = !user.TwoFactorEnabled;
+        var result = await _userManager.SetTwoFactorEnabledAsync(user, newState);
+
+        if (!result.Succeeded)
+        {
+            TempData["ErrorMessage"] = "İşlem başarısız";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        await _logs.LogAsync(HttpContext, "2FA_TOGGLED",
+            $"user_id={user.Id} enabled={newState}", user.Id);
+        TempData["SuccessMessage"] = newState
+            ? "İki adımlı doğrulama etkinleştirildi"
+            : "İki adımlı doğrulama devre dışı bırakıldı";
+        return RedirectToAction(nameof(Profile));
     }
 
     [HttpPost]

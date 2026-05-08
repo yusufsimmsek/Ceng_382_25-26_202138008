@@ -36,6 +36,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// 2FA token lifespan - default 1 gün, biz 5 dakika istiyoruz
+builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
+    o.TokenLifespan = TimeSpan.FromMinutes(5));
+
 // Cookie path'leri (custom Account controller için)
 builder.Services.ConfigureApplicationCookie(options =>
 {

@@ -1,0 +1,48 @@
+@model TwoFactorViewModel
+@{
+    ViewData["Title"] = "İki Adımlı Doğrulama";
+    ViewData["BodyClass"] = "auth-page";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-3">
+                    <div style="font-size:2.5rem;">🔐</div>
+                    <h3 class="fw-bold mb-1">Doğrulama Kodu</h3>
+                    <p class="text-muted small">Email adresine 6 haneli bir kod gönderdik.</p>
+                </div>
+
+                <form asp-action="LoginWithTwoFactor" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="RememberMe" />
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="mb-3">
+                        <input asp-for="Code" class="form-control otp-input"
+                               maxlength="6" inputmode="numeric"
+                               autocomplete="one-time-code" autofocus placeholder="------" />
+                        <span asp-validation-for="Code" class="text-danger small d-block text-center"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">Doğrula</button>
+                </form>
+
+                <div class="text-center">
+                    <small class="text-muted d-block mb-2">Kod gelmedi mi?</small>
+                    <form asp-action="ResendTwoFactorCode" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link btn-sm">Yeniden Gönder</button>
+                    </form>
+                    <a asp-action="Login" class="btn btn-link btn-sm">Vazgeç</a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">⏱ Kod 5 dakika içinde geçerliliğini yitirecek</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

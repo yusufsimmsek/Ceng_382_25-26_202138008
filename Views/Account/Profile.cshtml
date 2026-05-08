@@ -66,10 +66,38 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
                 <h5 class="card-title mb-3">Güvenlik</h5>
-                <p class="mb-1">İki adımlı doğrulama:
-                    <span class="badge bg-secondary">@(Model.TwoFactorEnabled ? "Aktif" : "Pasif")</span>
-                </p>
-                <small class="text-muted">2FA ayarları yakında.</small>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <strong>İki Adımlı Doğrulama (E-posta)</strong>
+                        <div class="my-1">
+                            @if (Model.TwoFactorEnabled)
+                            {
+                                <span class="badge bg-success">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Pasif</span>
+                            }
+                        </div>
+                        <small class="text-muted">
+                            Etkinleştirirsen her girişte email'ine 6 haneli kod gönderilir.
+                        </small>
+                    </div>
+                    <form asp-action="ToggleTwoFactor" method="post">
+                        @Html.AntiForgeryToken()
+                        @if (Model.TwoFactorEnabled)
+                        {
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('İki adımlı doğrulamayı devre dışı bırakmak istiyor musun?');">
+                                Devre Dışı Bırak
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary btn-sm">Etkinleştir</button>
+                        }
+                    </form>
+                </div>
             </div>
         </div>
     </div>

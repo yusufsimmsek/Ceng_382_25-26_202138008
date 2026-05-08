@@ -143,6 +143,16 @@ a:hover {
     box-shadow: 0 0 0 0.2rem rgba(230, 57, 70, 0.15);
 }
 
+/* 2FA OTP input */
+.otp-input {
+    font-size: 2.2rem;
+    letter-spacing: 0.5rem;
+    text-align: center;
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-weight: 600;
+    padding: 14px;
+}
+
 /* Admin: role badges + log styling */
 .role-badge {
     display: inline-block;
