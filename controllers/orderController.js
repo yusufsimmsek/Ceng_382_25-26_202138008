@@ -4,6 +4,7 @@ const { enrichCart } = require('../utils/cartHelper');
 const { fetchOrderFull } = require('../utils/orderHelper');
 const emailService = require('../services/emailService');
 const pdfService = require('../services/pdfService');
+const logService = require('../services/logService');
 
 async function create(req, res) {
   // payment + sepet kontrolu
@@ -90,15 +91,13 @@ async function create(req, res) {
       // cartItems zaten enrich edilmis (basePrice, extras, options, removals dolu)
       await emailService.sendOrderConfirmationToUser(user, orderObj, cartItems, caterer);
       await emailService.sendOrderNotificationToCaterer(caterer, user, orderObj, cartItems);
-      console.log('LOG: EMAIL_SENT user=', user.email, 'caterer=', caterer.email, 'order=', orderId);
+      await logService.logAction(req, 'EMAIL_SENT', `order_id=${orderId} to_user=${user.email} to_caterer=${caterer.email}`);
     } catch (e) {
       console.error('email gonderim hata (order proceeds):', e.message);
+      await logService.logAction(req, 'EMAIL_FAILED', `order_id=${orderId} err=${e.message}`);
     }
 
-    // TODO: Faz 7 - PDF generation
-    console.log('TODO: Generate receipt and agreement PDFs for order', orderId);
-    // TODO: Faz 10 - logging tablosuna yaz
-    console.log('LOG: ORDER_CREATED user=', userId, 'order=', orderId);
+    await logService.logAction(req, 'ORDER_CREATED', `order_id=${orderId} total=${total}`);
 
     res.redirect('/orders/' + orderId + '/success');
   } catch (err) {

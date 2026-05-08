@@ -1,6 +1,7 @@
 // cart controller - session-based sepet
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+const logService = require('../services/logService');
 const { enrichCart } = require('../utils/cartHelper');
 
 function initCart(req) {
@@ -343,12 +344,15 @@ async function processPayment(req, res) {
     // 0000 ile bitiyorsa - kesin basarisiz (test icin)
     // diger - basarili
     if (cleanedCard.endsWith('0000') && cleanedCard !== '4242424242424242') {
+      await logService.logAction(req, 'PAYMENT_FAILED', 'simulation=declined');
       req.flash('error', 'Kart bilgileri reddedildi. Lütfen tekrar dene.');
       return res.redirect('/cart/checkout');
     }
 
     req.session.paymentApproved = true;
     req.session.deliveryInfo = { address: addr, lat: addrLat, lng: addrLng };
+
+    await logService.logAction(req, 'PAYMENT_PROCESSED', `simulation=ok cart_items=${req.session.cart.length}`);
 
     req.flash('success', 'Ödeme onaylandı (simülasyon)');
     res.redirect('/cart/checkout');

@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+const logService = require('../services/logService');
 
 function registerForm(req, res) {
   res.render('auth/register', { title: 'Kayıt Ol' });
@@ -64,6 +65,8 @@ async function register(req, res) {
       [name.trim(), email.trim().toLowerCase(), hash, phone || null, role, address || null, lat, lng]
     );
 
+    await logService.logAction(req, 'USER_REGISTERED', 'email=' + email + ' role=' + role);
+
     req.flash('success', 'Kayıt başarılı, giriş yapabilirsin');
     res.redirect('/login');
   } catch (err) {
@@ -93,6 +96,7 @@ async function login(req, res) {
 
     // user yoksa veya sifre yanlissa ayni mesaj (email enum sizmasin)
     if (result.rows.length === 0) {
+      await logService.logAction(req, 'LOGIN_FAIL', 'email=' + email);
       req.flash('error', 'Email veya şifre hatalı');
       return res.redirect('/login');
     }
@@ -100,6 +104,7 @@ async function login(req, res) {
     const user = result.rows[0];
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) {
+      await logService.logAction(req, 'LOGIN_FAIL', 'email=' + email);
       req.flash('error', 'Email veya şifre hatalı');
       return res.redirect('/login');
     }
@@ -112,6 +117,8 @@ async function login(req, res) {
       role: user.role
     };
 
+    await logService.logAction(req, 'LOGIN_SUCCESS', 'user_id=' + user.id);
+
     // role'e gore yonlendir
     if (user.role === 'admin') return res.redirect('/admin');
     if (user.role === 'caterer') return res.redirect('/caterer');
@@ -123,7 +130,11 @@ async function login(req, res) {
   }
 }
 
-function logout(req, res) {
+async function logout(req, res) {
+  const uid = req.session && req.session.user ? req.session.user.id : null;
+  if (uid) {
+    await logService.logAction(req, 'LOGOUT', 'user_id=' + uid);
+  }
   req.session.destroy((err) => {
     if (err) {
       console.error('logout error:', err);

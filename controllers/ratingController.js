@@ -1,5 +1,6 @@
 // rating + yorum sistemi
 const db = require('../config/db');
+const logService = require('../services/logService');
 
 // kontrol: order var mi, user'a ait mi, completed mi, daha once rate edilmis mi
 async function checkCanRate(orderId, userId) {
@@ -94,8 +95,7 @@ async function submitRating(req, res) {
       [id, req.session.user.id, menuItemId, order.caterer_id, menuRating, catererRating, comment || null]
     );
 
-    // TODO: Faz 10 - logging tablosu
-    console.log('LOG: RATING_SUBMITTED order=', id, 'user=', req.session.user.id);
+    await logService.logAction(req, 'RATING_SUBMITTED', `order_id=${id} menu=${menuRating} caterer=${catererRating}`);
 
     req.flash('success', 'Değerlendirmen için teşekkürler');
     res.redirect('/orders');

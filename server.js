@@ -21,6 +21,7 @@ const catererRoutes = require('./routes/caterer');
 const adminRoutes = require('./routes/admin');
 
 const { requireLogin, requireRole } = require('./middleware/auth');
+const logService = require('./services/logService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -87,7 +88,8 @@ app.use((req, res) => {
 // global error handler
 app.use((err, req, res, next) => {
   console.error('hata:', err);
-  res.status(500).send('Sunucu hatasi');
+  logService.logError(req, err, req.originalUrl || '');
+  res.status(500).render('error', { title: 'Hata', message: 'Bir hata oluştu' });
 });
 
 app.listen(PORT, () => {

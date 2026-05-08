@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+const logService = require('../services/logService');
 
 async function dashboard(req, res) {
   try {
@@ -108,11 +109,13 @@ async function menuCreate(req, res) {
     const imagePath = '/uploads/menu/' + req.file.filename;
     const catererId = req.session.user.id;
 
-    await db.query(
+    const ins = await db.query(
       `INSERT INTO menu_items (caterer_id, name, price, description, image_path)
-       VALUES ($1, $2, $3, $4, $5)`,
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
       [catererId, name.trim(), priceNum, description || null, imagePath]
     );
+
+    await logService.logAction(req, 'MENU_CREATED', `menu_item_id=${ins.rows[0].id} name=${name.trim()}`);
 
     req.flash('success', 'Menü eklendi');
     res.redirect('/caterer/menu');
@@ -209,6 +212,8 @@ async function menuUpdate(req, res) {
       [name.trim(), priceNum, description || null, imagePath, availBool, id, catererId]
     );
 
+    await logService.logAction(req, 'MENU_UPDATED', `menu_item_id=${id}`);
+
     req.flash('success', 'Menü güncellendi');
     res.redirect('/caterer/menu');
   } catch (err) {
@@ -234,6 +239,7 @@ async function menuDelete(req, res) {
     if (result.rowCount === 0) {
       req.flash('error', 'Menü bulunamadi');
     } else {
+      await logService.logAction(req, 'MENU_DELETED', `menu_item_id=${id}`);
       req.flash('success', 'Menü pasif duruma alındı');
     }
     res.redirect('/caterer/menu');
@@ -648,8 +654,7 @@ async function updateOrderStatus(req, res) {
     if (result.rowCount === 0) {
       req.flash('error', 'Sipariş bulunamadi');
     } else {
-      // TODO: Faz 10 - logging
-      console.log('LOG: ORDER_STATUS_CHANGED order=', id, 'status=', newStatus);
+      await logService.logAction(req, 'ORDER_STATUS_CHANGED', `order_id=${id} new_status=${newStatus}`);
       req.flash('success', 'Sipariş durumu güncellendi');
     }
     res.redirect('/caterer/orders');
