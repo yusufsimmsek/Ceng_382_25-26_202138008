@@ -421,6 +421,43 @@ tr.inactive {
 .role-caterer { background: #cfe2ff; color: #084298; }
 .role-user { background: #d1e7dd; color: #0a3622; }
 
+/* admin loglar */
+.log-row {
+  font-size: 0.9rem;
+}
+.log-date {
+  white-space: nowrap;
+  color: var(--muted);
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+.log-action {
+  font-family: monospace;
+  font-size: 0.85rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-block;
+}
+.log-action-success { background: #d1e7dd; color: #0a3622; }
+.log-action-error { background: #f8d7da; color: #842029; }
+.log-action-info { background: #cfe2ff; color: #084298; }
+.log-action-default { background: #e9ecef; color: #495057; }
+.log-details {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #495057;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.log-ip {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 /* menu detail */
 .menu-detail-image {
   width: 100%;

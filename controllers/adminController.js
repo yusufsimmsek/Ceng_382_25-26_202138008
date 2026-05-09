@@ -206,4 +206,78 @@ async function ordersList(req, res) {
   }
 }
 
-module.exports = { dashboard, usersList, caterersList, ordersList };
+async function logsList(req, res) {
+  try {
+    const filters = {
+      action: req.query.action || '',
+      q: req.query.q || '',
+      ip: req.query.ip || '',
+      date_from: req.query.date_from || '',
+      date_to: req.query.date_to || ''
+    };
+    const page = parseInt(req.query.page, 10) || 1;
+
+    const where = [];
+    const params = [];
+
+    if (filters.action) {
+      params.push(filters.action);
+      where.push('l.action = $' + params.length);
+    }
+    if (filters.q) {
+      params.push('%' + filters.q + '%');
+      where.push('(u.email ILIKE $' + params.length + ' OR u.name ILIKE $' + params.length + ')');
+    }
+    if (filters.ip) {
+      params.push('%' + filters.ip + '%');
+      where.push('l.ip_address LIKE $' + params.length);
+    }
+    if (filters.date_from) {
+      params.push(filters.date_from);
+      where.push('l.created_at >= $' + params.length);
+    }
+    if (filters.date_to) {
+      params.push(filters.date_to);
+      where.push('l.created_at <= ($' + params.length + ')::date + INTERVAL \'1 day\'');
+    }
+    const whereSql = where.length > 0 ? 'WHERE ' + where.join(' AND ') : '';
+
+    const countRes = await db.query(
+      `SELECT COUNT(*) FROM logs l LEFT JOIN users u ON u.id = l.user_id ${whereSql}`,
+      params
+    );
+    const pag = getPagination(page, 50, parseInt(countRes.rows[0].count, 10));
+
+    params.push(pag.limit);
+    params.push(pag.offset);
+    const listRes = await db.query(
+      `SELECT l.id, l.action, l.details, l.ip_address, l.created_at,
+        u.email as user_email, u.name as user_name, u.role as user_role
+       FROM logs l
+       LEFT JOIN users u ON u.id = l.user_id
+       ${whereSql}
+       ORDER BY l.created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
+    );
+
+    // dropdown icin distinct action listesi
+    const actionsRes = await db.query(
+      'SELECT DISTINCT action FROM logs ORDER BY action'
+    );
+
+    res.render('admin/logs', {
+      title: 'Sistem Logları',
+      logs: listRes.rows,
+      actions: actionsRes.rows.map(r => r.action),
+      filters,
+      pagination: pag,
+      currentQuery: req.query
+    });
+  } catch (err) {
+    console.error('admin logs list error:', err);
+    res.status(500).send('Loglar yüklenemedi');
+  }
+}
+
+module.exports = { dashboard, usersList, caterersList, ordersList, logsList };
