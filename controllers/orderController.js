@@ -5,6 +5,7 @@ const { fetchOrderFull } = require('../utils/orderHelper');
 const emailService = require('../services/emailService');
 const pdfService = require('../services/pdfService');
 const logService = require('../services/logService');
+const { getPagination } = require('../utils/pagination');
 
 async function create(req, res) {
   // payment + sepet kontrolu
@@ -202,6 +203,25 @@ async function downloadAgreement(req, res) {
 
 async function myOrders(req, res) {
   try {
+    const filters = { status: req.query.status || '' };
+    const page = parseInt(req.query.page, 10) || 1;
+
+    const where = ['o.user_id = $1'];
+    const params = [req.session.user.id];
+    if (['pending', 'preparing', 'completed', 'cancelled'].includes(filters.status)) {
+      params.push(filters.status);
+      where.push('o.status = $' + params.length);
+    }
+    const whereSql = 'WHERE ' + where.join(' AND ');
+
+    const countRes = await db.query(
+      'SELECT COUNT(*) FROM orders o ' + whereSql,
+      params
+    );
+    const pag = getPagination(page, 15, parseInt(countRes.rows[0].count, 10));
+
+    params.push(pag.limit);
+    params.push(pag.offset);
     const result = await db.query(
       `SELECT o.id, o.total_amount, o.status, o.created_at, o.completed_at,
         u.name as caterer_name,
@@ -209,13 +229,17 @@ async function myOrders(req, res) {
         EXISTS (SELECT 1 FROM ratings WHERE order_id = o.id) as has_rating
        FROM orders o
        JOIN users u ON u.id = o.caterer_id
-       WHERE o.user_id = $1
-       ORDER BY o.created_at DESC`,
-      [req.session.user.id]
+       ${whereSql}
+       ORDER BY o.created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
     );
     res.render('user/orders', {
       title: 'Siparişlerim',
-      orders: result.rows
+      orders: result.rows,
+      filters,
+      pagination: pag,
+      currentQuery: req.query
     });
   } catch (err) {
     console.error('my orders error:', err);

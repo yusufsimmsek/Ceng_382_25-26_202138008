@@ -4,6 +4,7 @@ const path = require('path');
 const db = require('../config/db');
 const locationService = require('../services/locationService');
 const logService = require('../services/logService');
+const { getPagination } = require('../utils/pagination');
 
 async function dashboard(req, res) {
   try {
@@ -58,13 +59,38 @@ async function dashboard(req, res) {
 async function menuList(req, res) {
   try {
     const catererId = req.session.user.id;
-    const result = await db.query(
-      'SELECT * FROM menu_items WHERE caterer_id = $1 ORDER BY created_at DESC',
-      [catererId]
+    const filters = { q: req.query.q || '' };
+    const page = parseInt(req.query.page, 10) || 1;
+
+    const where = ['caterer_id = $1'];
+    const params = [catererId];
+    if (filters.q) {
+      params.push('%' + filters.q + '%');
+      where.push('name ILIKE $' + params.length);
+    }
+    const whereSql = 'WHERE ' + where.join(' AND ');
+
+    const countRes = await db.query(
+      'SELECT COUNT(*) FROM menu_items ' + whereSql,
+      params
     );
+    const pag = getPagination(page, 15, parseInt(countRes.rows[0].count, 10));
+
+    params.push(pag.limit);
+    params.push(pag.offset);
+    const result = await db.query(
+      `SELECT * FROM menu_items ${whereSql}
+       ORDER BY created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
+    );
+
     res.render('caterer/menu/list', {
       title: 'Menü Yönetimi',
-      items: result.rows
+      items: result.rows,
+      filters,
+      pagination: pag,
+      currentQuery: req.query
     });
   } catch (err) {
     console.error('menu list error:', err);
@@ -603,6 +629,7 @@ async function ordersList(req, res) {
   try {
     const catererId = req.session.user.id;
     const statusFilter = req.query.status || '';
+    const page = parseInt(req.query.page, 10) || 1;
 
     const where = ['o.caterer_id = $1'];
     const params = [catererId];
@@ -610,18 +637,33 @@ async function ordersList(req, res) {
       params.push(statusFilter);
       where.push('o.status = $' + params.length);
     }
+    const whereSql = 'WHERE ' + where.join(' AND ');
 
-    const sql = `SELECT o.*, u.name as user_name, u.email as user_email,
-                   (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as item_count
-                 FROM orders o JOIN users u ON u.id = o.user_id
-                 WHERE ${where.join(' AND ')}
-                 ORDER BY o.created_at DESC`;
+    const countRes = await db.query(
+      'SELECT COUNT(*) FROM orders o ' + whereSql,
+      params
+    );
+    const pag = getPagination(page, 20, parseInt(countRes.rows[0].count, 10));
 
-    const result = await db.query(sql, params);
+    params.push(pag.limit);
+    params.push(pag.offset);
+    const result = await db.query(
+      `SELECT o.*, u.name as user_name, u.email as user_email,
+        (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as item_count
+       FROM orders o JOIN users u ON u.id = o.user_id
+       ${whereSql}
+       ORDER BY o.created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
+    );
+
     res.render('caterer/orders', {
       title: 'Gelen Siparişler',
       orders: result.rows,
-      statusFilter
+      statusFilter,
+      filters: { status: statusFilter },
+      pagination: pag,
+      currentQuery: req.query
     });
   } catch (err) {
     console.error('caterer orders list error:', err);

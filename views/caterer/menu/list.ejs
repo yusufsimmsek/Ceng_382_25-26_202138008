@@ -3,10 +3,27 @@
   <a href="/caterer/menu/new" class="btn btn-primary">+ Yeni Menü Ekle</a>
 </div>
 
+<div class="filter-bar">
+  <form method="GET" action="/caterer/menu" class="row g-2 align-items-end">
+    <div class="col-md-8">
+      <label class="form-label small">İsim ara</label>
+      <input type="text" name="q" class="form-control" value="<%= filters.q %>">
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Filtrele</button>
+      <a href="/caterer/menu" class="btn btn-outline-secondary">Temizle</a>
+    </div>
+  </form>
+</div>
+
 <% if (!items || items.length === 0) { %>
   <div class="empty-state text-center p-5">
     <div style="font-size: 3rem;">🍽️</div>
-    <p class="text-muted mb-0">Henüz menü oluşturmadın. İlk menünü ekleyerek başla.</p>
+    <% if (filters.q) { %>
+      <p class="text-muted mb-0">Bu kriterlere uygun menü bulunamadı. Filtreyi temizlemeyi dene.</p>
+    <% } else { %>
+      <p class="text-muted mb-0">Henüz menü oluşturmadın. İlk menünü ekleyerek başla.</p>
+    <% } %>
   </div>
 <% } else { %>
   <div class="card border-0 shadow-sm">
@@ -53,4 +70,6 @@
       </table>
     </div>
   </div>
+
+  <%- include('../../partials/pagination', { pagination, currentQuery, baseUrl: '/caterer/menu' }) %>
 <% } %>

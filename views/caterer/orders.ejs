@@ -25,7 +25,11 @@
 <% if (!orders || orders.length === 0) { %>
   <div class="empty-state text-center p-5">
     <div style="font-size: 3rem;">📥</div>
-    <p class="text-muted mb-0">Henüz siparişin yok.</p>
+    <% if (statusFilter) { %>
+      <p class="text-muted mb-0">Bu kriterlere uygun sipariş bulunamadı. Filtreyi temizlemeyi dene.</p>
+    <% } else { %>
+      <p class="text-muted mb-0">Henüz siparişin yok.</p>
+    <% } %>
   </div>
 <% } else { %>
   <div class="card shadow-sm border-0">
@@ -79,4 +83,6 @@
       </table>
     </div>
   </div>
+
+  <%- include('../partials/pagination', { pagination, currentQuery, baseUrl: '/caterer/orders' }) %>
 <% } %>

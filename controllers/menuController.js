@@ -1,6 +1,7 @@
 // menu controller - herkese acik menu listesi
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+const { getPagination } = require('../utils/pagination');
 
 // NOT: Distance Matrix API her cagrida quota tuketiyor. Haversine pre-filter
 // (services/locationService.js icindeki filterCaterersByDistance) sayesinde
@@ -89,6 +90,20 @@ async function list(req, res) {
       }
     }
 
+    const whereSql = where.join(' AND ');
+    const page = parseInt(req.query.page, 10) || 1;
+
+    // toplam say
+    const countRes = await db.query(
+      `SELECT COUNT(*) FROM menu_items mi
+       JOIN users u ON u.id = mi.caterer_id
+       WHERE ${whereSql}`,
+      params
+    );
+    const pag = getPagination(page, 12, parseInt(countRes.rows[0].count, 10));
+
+    params.push(pag.limit);
+    params.push(pag.offset);
     const sql = `
       SELECT mi.*, u.name as caterer_name, u.id as caterer_id,
         (SELECT AVG(r.menu_rating)::numeric(3,2) FROM ratings r
@@ -102,8 +117,9 @@ async function list(req, res) {
            WHERE r.caterer_id = mi.caterer_id AND o.status = 'completed') as caterer_avg
       FROM menu_items mi
       JOIN users u ON u.id = mi.caterer_id
-      WHERE ${where.join(' AND ')}
+      WHERE ${whereSql}
       ORDER BY mi.created_at DESC
+      LIMIT $${params.length - 1} OFFSET $${params.length}
     `;
 
     const result = await db.query(sql, params);
@@ -123,7 +139,9 @@ async function list(req, res) {
       needsMaps: locationAvailable,
       userLat: userLoc ? userLoc.lat : null,
       userLng: userLoc ? userLoc.lng : null,
-      mapCaterers
+      mapCaterers,
+      pagination: pag,
+      currentQuery: req.query
     });
   } catch (err) {
     console.error('menu list error:', err);
