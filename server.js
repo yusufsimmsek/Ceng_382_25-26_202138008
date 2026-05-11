@@ -82,7 +82,7 @@ app.use('/admin', requireLogin, requireRole('admin'), adminRoutes);
 
 // 404
 app.use((req, res) => {
-  res.status(404).send('Sayfa bulunamadi');
+  res.status(404).render('404', { title: 'Sayfa Bulunamadı' });
 });
 
 // global error handler

@@ -3,9 +3,7 @@ const router = express.Router();
 const ratingController = require('../controllers/ratingController');
 const { requireLogin, requireRole } = require('../middleware/auth');
 
-router.use(requireLogin, requireRole('user'));
-
-router.get('/orders/:id/rate', ratingController.rateForm);
-router.post('/orders/:id/rate', ratingController.submitRating);
+router.get('/orders/:id/rate', requireLogin, requireRole('user'), ratingController.rateForm);
+router.post('/orders/:id/rate', requireLogin, requireRole('user'), ratingController.submitRating);
 
 module.exports = router;
