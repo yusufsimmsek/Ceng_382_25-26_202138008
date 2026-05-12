@@ -45,6 +45,7 @@
         <div class="card-body">
 
           <% if (g.options && g.options.length > 0) { %>
+            <div class="table-responsive">
             <table class="table table-sm align-middle mb-2">
               <thead>
                 <tr>
@@ -69,6 +70,7 @@
                 <% }) %>
               </tbody>
             </table>
+            </div>
           <% } else { %>
             <div class="text-muted small mb-2"><em>Bu grupta henüz seçenek yok.</em></div>
           <% } %>

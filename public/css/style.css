@@ -797,3 +797,149 @@ h6 { font-size: 0.95rem; }
   line-height: 1;
   margin-bottom: 10px;
 }
+
+
+/* ============================================================
+   RESPONSIVE TWEAKS - mobil iyilestirmeler
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* typography */
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+
+  /* hero */
+  .hero {
+    padding: 50px 16px;
+    min-height: auto;
+  }
+  .hero-title {
+    font-size: 2rem !important;
+  }
+  .hero-tagline {
+    font-size: 1.1rem;
+  }
+  .hero-desc {
+    font-size: 1rem;
+  }
+  .btn-cta,
+  .btn-cta-outline {
+    display: block;
+    width: 100%;
+    margin: 8px 0 !important;
+    text-align: center;
+  }
+
+  /* stat cards */
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 1.6rem; }
+  .stat-icon { font-size: 1.5rem; }
+
+  /* menu cards */
+  .menu-card { margin-bottom: 16px; }
+  .menu-card img { height: 200px; }
+
+  /* menu detail */
+  .menu-detail-image { aspect-ratio: 16 / 10; }
+  .detail-price { font-size: 1.8rem; }
+
+  /* tables */
+  .table { font-size: 0.85rem; }
+  .table th,
+  .table td {
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+
+  /* filter bar */
+  .filter-bar { padding: 12px; }
+  .filter-bar .row > div { margin-bottom: 8px; }
+
+  /* footer */
+  .site-footer .row > div {
+    text-align: center !important;
+    margin-bottom: 12px;
+  }
+
+  /* cart */
+  .cart-row .d-flex.gap-3 { flex-direction: column; align-items: flex-start; }
+  .cart-row img { width: 80px !important; height: 80px !important; }
+  .cart-total { font-size: 1.5rem; }
+
+  /* checkout */
+  .checkout-summary {
+    position: static;
+    margin-top: 24px;
+  }
+
+  /* forms - iOS auto-zoom onle */
+  .form-control,
+  .form-select {
+    font-size: 16px;
+  }
+
+  /* pagination */
+  .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .pagination .page-item .page-link {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+
+  /* order success */
+  .order-success-icon { font-size: 3.5rem; }
+
+  /* container padding */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* option row */
+  .option-row {
+    padding: 6px 0;
+    font-size: 0.95rem;
+  }
+
+  /* rating widget - mobilde daha sigsin */
+  .star-rating {
+    font-size: 2rem;
+  }
+
+  /* harita */
+  #menuListMap { height: 300px !important; }
+  #menuDetailMap { height: 220px !important; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem; }
+  .stat-value { font-size: 1.4rem; }
+
+  .navbar-brand {
+    font-size: 1.15rem;
+  }
+  .navbar-brand .brand-logo {
+    height: 24px;
+  }
+
+  /* pagination - sadece aktif sayfa + prev/next */
+  .pagination .page-item:not(.active):not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  /* status badges kucuk */
+  .status-badge {
+    padding: 3px 7px;
+    font-size: 0.72rem;
+  }
+
+  /* hero cta buton kompakt */
+  .btn-cta,
+  .btn-cta-outline {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+}
