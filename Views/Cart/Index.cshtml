@@ -55,7 +55,7 @@ else
                 {
                     <small class="text-muted d-block">Çıkarıldı: @string.Join(", ", item.Removals)</small>
                 }
-                <form asp-action="Update" method="post" class="d-inline mt-2">
+                <form asp-action="Update" method="post" class="d-inline mt-2" data-no-loading>
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="index" value="@item.Index" />
                     <label class="me-1 small">Adet:</label>

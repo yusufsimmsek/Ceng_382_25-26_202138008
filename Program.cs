@@ -83,6 +83,8 @@ else
     app.UseDeveloperExceptionPage();
 }
 
+app.UseStatusCodePagesWithReExecute("/NotFound");
+
 app.UseStaticFiles();
 app.UseRouting();
 

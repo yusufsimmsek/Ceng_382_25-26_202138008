@@ -2,47 +2,40 @@
     ViewData["Title"] = "Anasayfa";
 }
 
-<section class="hero text-center">
-    <h1>Sofranet</h1>
-    <p class="lead mb-4">Mahallendeki lezzet kapına gelsin</p>
-    <div class="d-flex gap-2 justify-content-center flex-wrap">
-        <a asp-controller="Menu" asp-action="Index" class="btn btn-primary btn-lg px-4">
-            Menülere Göz At
-        </a>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg px-4">
-            Hemen Üye Ol
-        </a>
+<div class="hero text-center">
+    <div class="container">
+        <h1 class="hero-title">🍽️ Sofranet</h1>
+        <p class="hero-tagline">Mahallendeki lezzet kapına gelsin</p>
+        <p class="lead text-muted mb-4">
+            Çevrendeki yerel restoranlardan online sipariş ver, en sevdiklerini keşfet.
+        </p>
+        <div class="mt-4">
+            <a asp-controller="Menu" asp-action="Index" class="btn-cta">Menülere Göz At</a>
+            <a asp-controller="Account" asp-action="Register" class="btn-cta-outline ms-2">Hemen Üye Ol</a>
+        </div>
     </div>
-</section>
+</div>
 
-<section class="py-3">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="feature-card">
-                <div class="icon">🍽️</div>
-                <h5 class="fw-bold">Mahalleden Sofraya</h5>
-                <p class="text-muted mb-0">
-                    Sana en yakın catererların ev usulü menülerine tek tıkla ulaş.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <div class="icon">⚙️</div>
-                <h5 class="fw-bold">Kişiye Özel</h5>
-                <p class="text-muted mb-0">
-                    Sosunu, garnitürünü seç, istemediğin malzemeyi çıkar. Sipariş senin.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <div class="icon">⭐</div>
-                <h5 class="fw-bold">Şeffaf Puanlama</h5>
-                <p class="text-muted mb-0">
-                    Tamamlanan siparişlerde hem yemeği hem catererı puanla.
-                </p>
-            </div>
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon">📍</div>
+            <div class="feature-title">Yakındaki Restoranlar</div>
+            <p class="feature-text">Konumuna göre en yakın yerel mutfakları keşfet.</p>
         </div>
     </div>
-</section>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon">🛒</div>
+            <div class="feature-title">Kolay Sipariş</div>
+            <p class="feature-text">Customize et, sepete ekle, dakikalar içinde siparişini tamamla.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Hızlı Teslimat</div>
+            <p class="feature-text">Yerel restoranlardan taze ve sıcak yemek hızla kapına gelsin.</p>
+        </div>
+    </div>
+</div>
