@@ -64,15 +64,15 @@
               </td>
               <td class="text-end">
                 <form action="/caterer/orders/<%= o.id %>/status" method="POST"
-                      class="d-flex gap-1 justify-content-end m-0">
-                  <select name="status" class="form-select form-select-sm" style="width: auto;">
+                      class="d-flex gap-1 justify-content-end align-items-center m-0" data-no-loading>
+                  <select name="status" class="form-select form-select-sm" style="width: auto;"
+                          onchange="this.form.submit()">
                     <% ['pending','preparing','completed','cancelled'].forEach(function(s){ %>
                       <option value="<%= s %>" <%= o.status === s ? 'selected' : '' %>>
                         <%= statusLabels[s] %>
                       </option>
                     <% }) %>
                   </select>
-                  <button type="submit" class="btn btn-sm btn-outline-primary">Kaydet</button>
                   <a href="/orders/<%= o.id %>/receipt" class="btn btn-sm btn-outline-secondary" title="Makbuzu indir">📄</a>
                   <a href="/orders/<%= o.id %>/agreement" class="btn btn-sm btn-outline-secondary" title="Sözleşmeyi indir">📋</a>
                 </form>

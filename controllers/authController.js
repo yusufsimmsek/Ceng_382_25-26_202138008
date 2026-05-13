@@ -5,7 +5,7 @@ const locationService = require('../services/locationService');
 const logService = require('../services/logService');
 
 function registerForm(req, res) {
-  res.render('auth/register', { title: 'Kayıt Ol' });
+  res.render('auth/register', { title: 'Kayıt Ol', bodyClass: 'auth-page' });
 }
 
 async function register(req, res) {
@@ -77,7 +77,7 @@ async function register(req, res) {
 }
 
 function loginForm(req, res) {
-  res.render('auth/login', { title: 'Giriş' });
+  res.render('auth/login', { title: 'Giriş', bodyClass: 'auth-page' });
 }
 
 async function login(req, res) {

@@ -16,9 +16,9 @@ router.post('/profile/address', catererController.updateAddress);
 // menu yonetimi
 router.get('/menu', catererController.menuList);
 router.get('/menu/new', catererController.menuNewForm);
-router.post('/menu', upload.single('image'), catererController.menuCreate);
+router.post('/menu', upload.handleUpload('image'), catererController.menuCreate);
 router.get('/menu/:id/edit', catererController.menuEditForm);
-router.put('/menu/:id', upload.single('image'), catererController.menuUpdate);
+router.put('/menu/:id', upload.handleUpload('image'), catererController.menuUpdate);
 router.delete('/menu/:id', catererController.menuDelete);
 
 // customization

@@ -35,4 +35,21 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
 
+// multer errorlarini yakalayip flash + redirect back yapan wrapper
+function handleUpload(field) {
+  return function (req, res, next) {
+    upload.single(field)(req, res, function (err) {
+      if (err) {
+        let msg = 'Görsel yükleme hatası';
+        if (err.code === 'LIMIT_FILE_SIZE') msg = 'Dosya çok büyük (max 5MB)';
+        else if (err.message) msg = err.message;
+        req.flash('error', msg);
+        return res.redirect('back');
+      }
+      next();
+    });
+  };
+}
+
 module.exports = upload;
+module.exports.handleUpload = handleUpload;

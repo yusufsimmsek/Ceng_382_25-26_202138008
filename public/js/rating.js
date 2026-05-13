@@ -43,4 +43,17 @@
   }
 
   document.querySelectorAll('.star-rating').forEach(init);
+
+  // submit oncesi iki rating'in de dolu oldugunu kontrol et
+  var form = document.querySelector('form[action*="/rate"]');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      var m = form.querySelector('input[name="menu_rating"]');
+      var c = form.querySelector('input[name="caterer_rating"]');
+      if (!m || !c || !m.value || !c.value) {
+        e.preventDefault();
+        alert('Lütfen iki bölüm için de puan ver');
+      }
+    });
+  }
 })();
