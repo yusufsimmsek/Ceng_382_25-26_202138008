@@ -1,0 +1,52 @@
+<div class="row justify-content-center">
+  <div class="col-12" style="max-width: 450px;">
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body p-4">
+        <h2 class="text-center mb-2">Doğrulama Kodu</h2>
+        <p class="text-center text-muted mb-4">
+          Email adresine 6 haneli bir kod gönderdik. Lütfen aşağıya gir.
+        </p>
+
+        <form action="/auth/2fa" method="POST">
+          <div class="mb-3">
+            <input type="text" name="code" class="form-control otp-input"
+                   maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+                   autocomplete="one-time-code" autofocus required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg">Doğrula</button>
+        </form>
+
+        <p class="text-center small text-muted mt-3 mb-1">
+          Kod <span id="countdown" class="countdown">--:--</span> içinde geçersiz olacak.
+        </p>
+
+        <div class="text-center small mb-0">
+          <span>Kod gelmedi mi?</span>
+          <form action="/auth/2fa/resend" method="POST" class="d-inline m-0" data-no-loading>
+            <button type="submit" class="btn btn-link btn-sm p-0 align-baseline">Yeniden Gönder</button>
+          </form>
+          &middot;
+          <a href="/login">Vazgeç</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var expiresAt = <%= pendingExpiresAt %>;
+    var el = document.getElementById('countdown');
+    function tick() {
+      var left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      var mm = String(Math.floor(left / 60)).padStart(2, '0');
+      var ss = String(left % 60).padStart(2, '0');
+      el.textContent = mm + ':' + ss;
+      if (left <= 0) {
+        el.parentElement.classList.add('text-danger');
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>

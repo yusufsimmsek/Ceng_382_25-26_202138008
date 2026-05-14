@@ -65,6 +65,36 @@
   </div>
 </div>
 
+<!-- 2FA -->
+<div class="card shadow-sm border-0 mt-3">
+  <div class="card-body p-4">
+    <h5 class="mb-3">Güvenlik</h5>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <div>
+          İki Adımlı Doğrulama
+          <% if (profile.two_factor_enabled) { %>
+            <span class="badge bg-success ms-1">Aktif</span>
+          <% } else { %>
+            <span class="badge bg-secondary ms-1">Pasif</span>
+          <% } %>
+        </div>
+        <small class="text-muted">Etkinleştirirsen her girişte email'ine kod gönderilir.</small>
+      </div>
+      <form action="/caterer/profile/2fa-toggle" method="POST" class="m-0"
+            <% if (profile.two_factor_enabled) { %>
+              onsubmit="return confirm('İki adımlı doğrulamayı kapatmak istediğine emin misin?');"
+            <% } %>>
+        <% if (profile.two_factor_enabled) { %>
+          <button type="submit" class="btn btn-outline-danger btn-sm">Devre Dışı Bırak</button>
+        <% } else { %>
+          <button type="submit" class="btn btn-primary btn-sm">Etkinleştir</button>
+        <% } %>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
   document.getElementById('locateBtn').addEventListener('click', function() {
     if (!navigator.geolocation) {

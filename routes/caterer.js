@@ -12,6 +12,7 @@ router.get('/dashboard', catererController.dashboard);
 router.get('/profile', catererController.profile);
 router.post('/profile/location', catererController.updateLocation);
 router.post('/profile/address', catererController.updateAddress);
+router.post('/profile/2fa-toggle', catererController.toggle2FA);
 
 // menu yonetimi
 router.get('/menu', catererController.menuList);

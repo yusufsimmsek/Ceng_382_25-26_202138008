@@ -791,6 +791,24 @@ body.auth-page main {
   padding: 40px 0;
   min-height: calc(100vh - 76px);
 }
+.otp-input {
+  font-size: 2rem;
+  letter-spacing: 0.5rem;
+  text-align: center;
+  font-family: monospace;
+  font-weight: 600;
+  padding: 12px;
+}
+.countdown {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--primary);
+}
+.security-section {
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  margin-top: 16px;
+}
 
 /* 404 sayfasi */
 .error-404 {

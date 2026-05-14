@@ -3,6 +3,17 @@ const bcrypt = require('bcrypt');
 const db = require('../config/db');
 const locationService = require('../services/locationService');
 const logService = require('../services/logService');
+const emailService = require('../services/emailService');
+
+function generateCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function redirectByRole(user, res) {
+  if (user.role === 'admin') return res.redirect('/admin');
+  if (user.role === 'caterer') return res.redirect('/caterer');
+  return res.redirect('/user');
+}
 
 function registerForm(req, res) {
   res.render('auth/register', { title: 'Kayıt Ol', bodyClass: 'auth-page' });
@@ -109,7 +120,32 @@ async function login(req, res) {
       return res.redirect('/login');
     }
 
-    // session'a sadece gerekli alanlari koy
+    // 2FA aktif mi?
+    if (user.two_factor_enabled) {
+      const code = generateCode();
+      await db.query(
+        `UPDATE users SET two_factor_code = $1,
+           two_factor_expires_at = NOW() + INTERVAL '5 minutes'
+         WHERE id = $2`,
+        [code, user.id]
+      );
+
+      // emailde gonder (fail olsa bile kod DB'de, kullanici resend talep edebilir)
+      try {
+        await emailService.sendTwoFactorCode(user, code);
+      } catch (e) {
+        console.error('2fa mail hata:', e.message);
+      }
+
+      await logService.logAction(req, '2FA_CODE_SENT', 'user_id=' + user.id);
+
+      const expiresAt = Date.now() + 5 * 60 * 1000;
+      req.session.pendingTwoFactor = { userId: user.id, expiresAt };
+
+      return res.redirect('/auth/2fa');
+    }
+
+    // 2FA yok - normal login
     req.session.user = {
       id: user.id,
       name: user.name,
@@ -118,11 +154,7 @@ async function login(req, res) {
     };
 
     await logService.logAction(req, 'LOGIN_SUCCESS', 'user_id=' + user.id);
-
-    // role'e gore yonlendir
-    if (user.role === 'admin') return res.redirect('/admin');
-    if (user.role === 'caterer') return res.redirect('/caterer');
-    return res.redirect('/user');
+    return redirectByRole(user, res);
   } catch (err) {
     console.error('login error:', err);
     req.flash('error', 'Giris sirasinda bir hata olustu');
@@ -143,10 +175,121 @@ async function logout(req, res) {
   });
 }
 
+// 2FA endpointleri
+function twoFactorForm(req, res) {
+  const p = req.session.pendingTwoFactor;
+  if (!p) return res.redirect('/login');
+  if (Date.now() > p.expiresAt) {
+    delete req.session.pendingTwoFactor;
+    req.flash('error', 'Kod süresi doldu, tekrar giriş yap');
+    return res.redirect('/login');
+  }
+  res.render('auth/2fa', {
+    title: 'İki Adımlı Doğrulama',
+    bodyClass: 'auth-page',
+    pendingExpiresAt: p.expiresAt
+  });
+}
+
+async function twoFactorVerify(req, res) {
+  const p = req.session.pendingTwoFactor;
+  if (!p) return res.redirect('/login');
+  if (Date.now() > p.expiresAt) {
+    delete req.session.pendingTwoFactor;
+    req.flash('error', 'Kod süresi doldu, tekrar giriş yap');
+    return res.redirect('/login');
+  }
+
+  try {
+    const code = (req.body.code || '').trim();
+    const r = await db.query(
+      `SELECT id, name, email, role, two_factor_code, two_factor_expires_at
+       FROM users WHERE id = $1`,
+      [p.userId]
+    );
+    if (r.rows.length === 0) {
+      delete req.session.pendingTwoFactor;
+      return res.redirect('/login');
+    }
+    const user = r.rows[0];
+
+    const expired = user.two_factor_expires_at && new Date(user.two_factor_expires_at) < new Date();
+    if (!user.two_factor_code || expired || code !== user.two_factor_code) {
+      await logService.logAction(req, '2FA_FAIL', 'user_id=' + user.id);
+      req.flash('error', 'Kod yanlış veya süresi dolmuş');
+      return res.redirect('/auth/2fa');
+    }
+
+    // basarili - kodu temizle
+    await db.query(
+      'UPDATE users SET two_factor_code = NULL, two_factor_expires_at = NULL WHERE id = $1',
+      [user.id]
+    );
+
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+    delete req.session.pendingTwoFactor;
+
+    await logService.logAction(req, 'LOGIN_SUCCESS', 'user_id=' + user.id + ' 2fa=true');
+    return redirectByRole(user, res);
+  } catch (err) {
+    console.error('2fa verify error:', err);
+    req.flash('error', 'Bir hata olustu');
+    return res.redirect('/auth/2fa');
+  }
+}
+
+async function twoFactorResend(req, res) {
+  const p = req.session.pendingTwoFactor;
+  if (!p) return res.redirect('/login');
+
+  try {
+    const r = await db.query(
+      'SELECT id, name, email FROM users WHERE id = $1',
+      [p.userId]
+    );
+    if (r.rows.length === 0) {
+      delete req.session.pendingTwoFactor;
+      return res.redirect('/login');
+    }
+    const user = r.rows[0];
+
+    const code = generateCode();
+    await db.query(
+      `UPDATE users SET two_factor_code = $1,
+         two_factor_expires_at = NOW() + INTERVAL '5 minutes'
+       WHERE id = $2`,
+      [code, user.id]
+    );
+    try {
+      await emailService.sendTwoFactorCode(user, code);
+    } catch (e) {
+      console.error('2fa resend mail hata:', e.message);
+    }
+
+    req.session.pendingTwoFactor.expiresAt = Date.now() + 5 * 60 * 1000;
+    await logService.logAction(req, '2FA_CODE_RESENT', 'user_id=' + user.id);
+
+    req.flash('success', 'Yeni kod gönderildi');
+    res.redirect('/auth/2fa');
+  } catch (err) {
+    console.error('2fa resend error:', err);
+    req.flash('error', 'Kod gönderilemedi');
+    res.redirect('/auth/2fa');
+  }
+}
+
 module.exports = {
   registerForm,
   register,
   loginForm,
   login,
-  logout
+  logout,
+  twoFactorForm,
+  twoFactorVerify,
+  twoFactorResend
 };

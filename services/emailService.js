@@ -181,7 +181,47 @@ async function sendOrderNotificationToCaterer(caterer, user, order, items) {
   }
 }
 
+async function sendTwoFactorCode(user, code) {
+  const t = getTransporter();
+  if (!t) {
+    console.log('email skip - transporter yok (2fa)');
+    return null;
+  }
+
+  const html = wrapEmail(`
+    <h3>Merhaba ${user.name},</h3>
+    <p>Hesabına giriş için doğrulama kodun aşağıdadır:</p>
+
+    <div style="background:#FFF8F0; border:2px solid #E63946; border-radius:12px; padding:24px; text-align:center; margin:20px 0;">
+      <div style="font-size:2.5rem; font-family:'Courier New',monospace; font-weight:700; letter-spacing:8px; color:#E63946;">
+        ${code}
+      </div>
+    </div>
+
+    <p>Bu kod 5 dakika içinde geçerliliğini yitirecek.</p>
+    <p style="color:#777; font-size:13px;">
+      Eğer bu girişi sen başlatmadıysan, hesabını güvende tutmak için şifreni değiştir.
+    </p>
+  `);
+
+  const text = `Sofranet doğrulama kodun: ${code}\nKod 5 dakika içinde geçersizleşecek.\n`;
+
+  try {
+    return await t.sendMail({
+      from: process.env.SMTP_USER || 'Sofranet <no-reply@sofranet.com>',
+      to: user.email,
+      subject: 'Sofranet - Doğrulama Kodun',
+      text,
+      html
+    });
+  } catch (err) {
+    console.error('2fa email gonderim hata:', err.message);
+    return null;
+  }
+}
+
 module.exports = {
   sendOrderConfirmationToUser,
-  sendOrderNotificationToCaterer
+  sendOrderNotificationToCaterer,
+  sendTwoFactorCode
 };

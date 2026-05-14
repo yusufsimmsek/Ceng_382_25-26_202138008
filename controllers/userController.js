@@ -1,6 +1,7 @@
 // user controller - dashboard, profile, lokasyon vb.
 const db = require('../config/db');
 const locationService = require('../services/locationService');
+const logService = require('../services/logService');
 
 async function dashboard(req, res) {
   try {
@@ -48,7 +49,7 @@ async function profile(req, res) {
   try {
     const id = req.session.user.id;
     const result = await db.query(
-      'SELECT id, name, email, phone, address, latitude, longitude FROM users WHERE id = $1',
+      'SELECT id, name, email, phone, address, latitude, longitude, two_factor_enabled FROM users WHERE id = $1',
       [id]
     );
     res.render('user/profile', {
@@ -58,6 +59,24 @@ async function profile(req, res) {
   } catch (err) {
     console.error('user profile error:', err);
     res.status(500).send('Profil yüklenemedi');
+  }
+}
+
+async function toggle2FA(req, res) {
+  try {
+    const r = await db.query(
+      `UPDATE users SET two_factor_enabled = NOT two_factor_enabled, updated_at = NOW()
+       WHERE id = $1 RETURNING two_factor_enabled`,
+      [req.session.user.id]
+    );
+    const newState = r.rows[0].two_factor_enabled;
+    await logService.logAction(req, '2FA_TOGGLED', 'new_state=' + newState);
+    req.flash('success', 'İki adımlı doğrulama ' + (newState ? 'etkinleştirildi' : 'devre dışı bırakıldı'));
+    res.redirect('/user/profile');
+  } catch (err) {
+    console.error('user toggle2FA error:', err);
+    req.flash('error', '2FA güncellenemedi');
+    res.redirect('/user/profile');
   }
 }
 
@@ -130,4 +149,4 @@ async function updateAddress(req, res) {
   }
 }
 
-module.exports = { dashboard, profile, updateLocation, updateAddress };
+module.exports = { dashboard, profile, updateLocation, updateAddress, toggle2FA };
