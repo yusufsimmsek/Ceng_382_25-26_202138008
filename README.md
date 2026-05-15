@@ -107,8 +107,61 @@ Bu fontlar olmazsa PDFKit default Helvetica kullanır; bu durumda kodda ASCII ka
 ## Notlar
 
 - Ödeme tamamen simüle edilmiştir, gerçek kart bilgisi kullanılmamalıdır.
+- Test için `4242 4242 4242 4242` kullanılabilir, son haneleri `0000` olan kartlar bilerek reddedilir (failure path test için).
 - Google Maps API key olmadan harita ve geocode özellikleri placeholder davranır (kayıtta lat/lng null kalır, profile'dan tarayıcı geolokasyonu ile sonradan eklenebilir).
-- PDF'ler her sipariş için kod ile dinamik olarak üretilir.
+- SMTP yapılandırılmamışsa email'ler atlanır, sipariş akışı yine çalışır.
+- PDF'ler her sipariş için kod ile dinamik olarak üretilir, statik template değildir.
+
+## Demo Senaryosu
+
+Yaklaşık 10 dakikalık bir demo için önerilen akış:
+
+**1. Anonim - Anasayfa & Menüler (~1 dk)**
+- `/` aç, hero ve feature kartları
+- `/menu` tıkla, kartları göster, bir tanesine tıkla
+- Detay sayfası (görsel, customization seçenekleri, harita)
+
+**2. Kayıt & Login (~1 dk)**
+- `/register` → yeni user oluştur (caterer kaydı seçeneği: adres + geocoding otomatik)
+- Login
+
+**3. User akışı (~3 dk)**
+- `/menu` → konumumu belirle (HTML5 geolocation)
+- Yarıçap değiştir (10 km → 50 km)
+- "Haritada Göster" toggle (Google Maps marker)
+- Bir item seç → customization (option group + removable)
+- Sepete ekle → `/cart`
+- `/cart/checkout` → kart bilgisi (4242 4242 4242 4242) → ödeme onayla → sipariş oluştur
+- `/orders/:id/success` → makbuz indir + sözleşme indir (PDF'leri aç, dinamik içeriği göster)
+- Email inbox (Mailtrap'te user ve caterer email'leri)
+
+**4. Caterer akışı (~2 dk)**
+- Caterer hesabıyla login
+- `/caterer` dashboard (stats + bekleyen sipariş alert)
+- `/caterer/menu` → yeni menü ekle (image upload + customization sayfası)
+- `/caterer/orders` → siparişin durumunu "preparing → completed" yap (status dropdown)
+
+**5. Rating sistemi (~1 dk)**
+- User hesabına dön
+- `/orders` → tamamlanan siparişe "Değerlendir" → yıldız + yorum gönder
+- `/menu` → o caterer'ın average rating'inin güncellendiğini göster
+
+**6. Admin akışı (~1 dk)**
+- Admin ile login
+- `/admin` dashboard (sistem geneli stats)
+- `/admin/users`, `/admin/caterers`, `/admin/orders` - filter + pagination
+- `/admin/logs` - filter (action, user, date) ile log inceleme
+
+**7. Bonus: 2FA (~1 dk)**
+- User profile → 2FA Etkinleştir
+- Logout → Login → email'e gelen 6 haneli kod
+- `/auth/2fa` kod gir → tam login
+
+Demo sırasında vurgulanacaklar:
+- Customization tamamen dinamik, caterer kendi tanımlar
+- PDF'ler her sipariş için kodla üretiliyor (statik template yok)
+- Lokasyon filtreleme Google Maps Distance Matrix API ile gerçek yol mesafesi (Haversine pre-filter ile quota tasarrufu)
+- Rating sadece tamamlanmış siparişe bağlı, fraud önlenmiş
 
 ## Geliştiren
 
@@ -118,10 +171,14 @@ CENG 382 - Web Programming, 2025-2026 Bahar Dönemi
 
 ## Referanslar
 
-- Express.js Documentation - https://expressjs.com/
-- PostgreSQL Documentation - https://www.postgresql.org/docs/
-- Google Maps Platform Documentation - https://developers.google.com/maps/documentation
-- PDFKit Documentation - http://pdfkit.org/
-- Nodemailer Documentation - https://nodemailer.com/
+- Express.js - https://expressjs.com/
+- PostgreSQL - https://www.postgresql.org/docs/
+- Google Maps Platform - https://developers.google.com/maps/documentation
+  - Geocoding API
+  - Distance Matrix API
+  - Maps JavaScript API
+- PDFKit - http://pdfkit.org/
+- Nodemailer - https://nodemailer.com/
+- Bootstrap 5 - https://getbootstrap.com/docs/5.3/
 - MDN Web Docs - https://developer.mozilla.org/
-- Bootstrap 5 Documentation - https://getbootstrap.com/docs/5.3/
+- bcrypt (password hashing), express-session, multer (file upload), pg (PostgreSQL client) - npm
