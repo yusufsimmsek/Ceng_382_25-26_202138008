@@ -1,3 +1,6 @@
+// Sofranet - CENG 382 donem projesi
+// Yusuf Simsek - 202138008
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
