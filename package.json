@@ -1,13 +1,13 @@
 {
   "name": "sofranet",
   "version": "1.0.0",
-  "description": "CENG 382 dönem projesi - catering platformu",
+  "description": "CENG 382 catering platform - Sofranet",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "author": "Yusuf Şimşek",
+  "author": "Yusuf Şimşek <yusuf.simsek@example.com>",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

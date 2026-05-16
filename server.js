@@ -1,4 +1,5 @@
-// Sofranet - ana server dosyasi
+// Sofranet - CENG 382 donem projesi
+// Yusuf Simsek - 202138008
 require('dotenv').config();
 
 const express = require('express');
