@@ -2,6 +2,8 @@
 
 CENG 382 - Web Programming dersi dönem projesi.
 
+**GitHub Reposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008
+
 Sofranet, kullanıcıların yakınlarındaki restoranları görüp sipariş verebildiği bir catering platformudur. Üç farklı kullanıcı rolü vardır: admin, caterer (restoran sahibi) ve müşteri.
 
 ## Özellikler

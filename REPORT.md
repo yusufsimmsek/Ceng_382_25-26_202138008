@@ -4,7 +4,7 @@
 **Dönem**: 2025-2026 Bahar
 **Geliştiren**: Yusuf Şimşek - 202138008
 **Bölüm**: Yönetim Bilişim Sistemleri, Çankaya Üniversitesi
-**GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/Term-Project
+**GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008
 
 ---
 
@@ -197,6 +197,9 @@ Ortak `utils/pagination.js` helper ve `views/partials/pagination.ejs` partial il
 README.md dosyasında detaylı kurulum talimatları, test hesapları, demo senaryosu ve referanslar bulunmaktadır.
 
 ## 8. Bağlantılar
+
+- Proje Reposu: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008
+
 
 - **GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/Term-Project
 - **YouTube Demo Videosu**: Demo videosu YouTube'a gizli video olarak yüklendikten sonra gerçek bağlantı bu satıra eklenmelidir.
