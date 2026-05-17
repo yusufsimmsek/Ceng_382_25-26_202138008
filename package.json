@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "author": "Yusuf Şimşek <yusuf.simsek@example.com>",
+  "author": "Yusuf Şimşek <c2138008@student.cankaya.edu.tr>",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
