@@ -201,7 +201,7 @@ README.md dosyasında detaylı kurulum talimatları, test hesapları, demo senar
 - Proje Reposu: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008
 
 
-- **GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/Term-Project
+- **GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008
 - **YouTube Demo Videosu**: Demo videosu YouTube'a gizli video olarak yüklendikten sonra gerçek bağlantı bu satıra eklenmelidir.
 
 ## 9. Kaynaklar
