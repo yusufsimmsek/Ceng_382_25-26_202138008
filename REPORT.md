@@ -4,6 +4,7 @@
 **Dönem**: 2025-2026 Bahar
 **Geliştiren**: Yusuf Şimşek - 202138008
 **Bölüm**: Yönetim Bilişim Sistemleri, Çankaya Üniversitesi
+**GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/Term-Project
 
 ---
 
@@ -195,7 +196,26 @@ Ortak `utils/pagination.js` helper ve `views/partials/pagination.ejs` partial il
 
 README.md dosyasında detaylı kurulum talimatları, test hesapları, demo senaryosu ve referanslar bulunmaktadır.
 
-## 8. Sonuç
+## 8. Bağlantılar
+
+- **GitHub Deposu**: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/Term-Project
+- **YouTube Demo Videosu**: Demo videosu YouTube'a gizli video olarak yüklendikten sonra gerçek bağlantı bu satıra eklenmelidir.
+
+## 9. Kaynaklar
+
+- Express.js - https://expressjs.com/
+- PostgreSQL - https://www.postgresql.org/docs/
+- Google Maps Platform - https://developers.google.com/maps/documentation
+  - Geocoding API
+  - Distance Matrix API
+  - Maps JavaScript API
+- PDFKit - http://pdfkit.org/
+- Nodemailer - https://nodemailer.com/
+- Bootstrap 5 - https://getbootstrap.com/docs/5.3/
+- MDN Web Docs - https://developer.mozilla.org/
+- bcrypt, express-session, multer ve pg npm paket dokümantasyonları
+
+## 10. Sonuç
 
 Ders kapsamında istenen tüm gereksinimler karşılanmıştır:
 - 3 rol ve role-based authorization
