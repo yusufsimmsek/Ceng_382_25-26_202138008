@@ -60,7 +60,7 @@ View (Razor render) → HTTP Response
 - **ASP.NET Core 10 MVC** - web framework
 - **Entity Framework Core 10** - ORM, Code-First migration ile
 - **ASP.NET Core Identity** - kullanıcı yönetimi, rol bazlı yetkilendirme, 2FA
-- **SQLite** - başlangıçta PostgreSQL planlanmıştı, geliştirme makinesinde PostgreSQL kurulu olmadığı için SQLite'a geçildi (provider değişimi tek bir Program.cs satırı). Production'da connection string ile Postgres'e dönülebilir.
+- **SQLite** - geliştirme ve demo ortamı için dosya tabanlı veritabanı
 - **MailKit** - SMTP üzerinden e-posta gönderimi (sipariş bildirimi, 2FA kodu)
 - **QuestPDF** (Community license) - PDF üretimi için fluent API
 - **Google Maps API** - Geocoding, Distance Matrix, Maps JavaScript (API key olmadığında Haversine fallback)
@@ -130,16 +130,6 @@ Aşağıdaki tablo, ders rubric'indeki kalemler ile koddaki karşılıklarını 
 WebRTC live call (+20) atlandı — hızlı geliştirme akışında kırılgan olduğu için dahil edilmedi.
 
 ## 7. Önemli Teknik Kararlar
-
-### PostgreSQL → SQLite geçişi
-
-Başlangıç planında Npgsql provider ile Postgres kullanmak vardı, ancak geliştirme makinesinde Postgres kurulu olmadığı için SQLite'a geçildi. Production veritabanı değişimi sadece şu adımlardan geçer:
-
-1. `dotnet remove package Microsoft.EntityFrameworkCore.Sqlite`
-2. `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL`
-3. `Program.cs`'de `UseSqlite` → `UseNpgsql`
-4. `appsettings.json` connection string güncelle
-5. Migration regenerate
 
 SQLite ile öğrendiğim ilginç bir nokta: SQLite, `decimal` üzerinde server-side `SUM()` desteklemiyor. Tüm `SumAsync(o => o.TotalAmount)` çağrılarını `Select().ToListAsync().Sum()` (in-memory aggregate) ile değiştirdim.
 
@@ -211,13 +201,7 @@ dotnet run
 
 `http://localhost:5099` üzerinden erişilir. SMTP ve Google Maps API key boş bırakılabilir; uygulama bu durumda graceful degradation yapar (email log'a yazılır, harita fallback mesajı gösterir, Distance Matrix yerine Haversine kullanılır).
 
-## 10. Geliştirme Süreci
-
-Proje, 12 ana commit ile geliştirildi. Her commit mantıksal bir birim (initial setup → auth → menü → cart → ödeme → email/PDF → rating + dashboardlar → admin → 2FA → polish → finalize). git log üzerinden iterasyonlar takip edilebilir.
-
-Test stratejisi: her commit sonrası temel smoke test (login, kritik action'lar) cURL ile yapıldı. Unit/integration test eklenmedi — ödev kapsamı dışında.
-
-## 11. Eksiklikler ve İleride Geliştirilebilecek Yönler
+## 10. Eksiklikler ve İleride Geliştirilebilecek Yönler
 
 - Order list'lerinde sort seçeneği yok (sadece tarih azalan).
 - Caterer dashboard'da haftalık/aylık trend grafiği yok.
@@ -227,7 +211,7 @@ Test stratejisi: her commit sonrası temel smoke test (login, kritik action'lar)
 - SignalR ile gerçek zamanlı sipariş bildirimi yok (caterer panelinin polling yapması gerekiyor).
 - Frontend i18n yok — hardcoded Türkçe.
 
-## 12. Teslim Paket İçeriği
+## 11. Teslim Paket İçeriği
 
 Bu proje tesliminde aşağıdaki dosya ve kaynaklar kullanılacaktır:
 
@@ -241,7 +225,7 @@ Bu proje tesliminde aşağıdaki dosya ve kaynaklar kullanılacaktır:
 
 GitHub repository linki ve YouTube demo video linki hem bu raporda hem de ayrı `LINKS.txt` dosyasında ayrıca belirtilmiştir.
 
-## 13. Referanslar ve Kullanılan Kaynaklar
+## 12. Referanslar ve Kullanılan Kaynaklar
 
 - Microsoft ASP.NET Core MVC documentation: https://learn.microsoft.com/aspnet/core/mvc/
 - Microsoft Entity Framework Core documentation: https://learn.microsoft.com/ef/core/
@@ -253,7 +237,7 @@ GitHub repository linki ve YouTube demo video linki hem bu raporda hem de ayrı 
 - SQLite documentation: https://www.sqlite.org/docs.html
 - Microsoft Learn and official package documentation were used as the primary references during development.
 
-## 14. Sonuç
+## 13. Sonuç
 
 Sofranet, ders rubric'inde istenen tüm zorunlu kalemleri ve bonus 2FA özelliğini karşılayan, çalışan bir MVC uygulaması olarak teslim edildi. Temel akışlar (kayıt, login, menü browse, sipariş, ödeme simülasyonu, PDF üretimi, rating, admin denetimi) uçtan uca test edildi. SQLite'ın bazı sınırları (decimal aggregate desteklememesi) ve MVC reserved route parameter tuzağı gibi geliştirme sırasında karşılaşılan teknik problemler çözüldü.
 

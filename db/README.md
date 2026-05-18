@@ -47,15 +47,3 @@ Sonrasında `dotnet run` ile uygulamayı başlatabilirsin. Migration history iç
 | can@example.com | User123 | User |
 
 Parolalar Identity'nin PBKDF2 hash'i ile saklanır. SQL dump'taki `PasswordHash` alanları zaten hash'lenmiş halleridir; doğrudan import edilirse yukarıdaki şifrelerle giriş yapılır.
-
-## PostgreSQL geçişi
-
-Proje SQLite ile teslim edildi ancak provider değişimi tek satır:
-
-1. `dotnet remove package Microsoft.EntityFrameworkCore.Sqlite`
-2. `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL`
-3. `Program.cs`: `UseSqlite` → `UseNpgsql`
-4. `appsettings.json`: connection string `Host=localhost;Database=sofranet;...`
-5. `rm -rf Migrations && dotnet ef migrations add InitialCreate && dotnet ef database update`
-
-`SeedData.cs` migration sonrası çalışıp aynı veriyi yeniden oluşturur.

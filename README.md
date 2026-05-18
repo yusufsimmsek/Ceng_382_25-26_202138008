@@ -19,7 +19,7 @@ ASP.NET Core 10 MVC + EF Core + Identity ile yazılmış bir catering platformu.
 ## Tech Stack
 
 - ASP.NET Core 10 MVC
-- Entity Framework Core 10 (SQLite, opsiyonel PostgreSQL)
+- Entity Framework Core 10 (SQLite)
 - ASP.NET Core Identity (auth, roller, 2FA)
 - MailKit (SMTP)
 - QuestPDF (PDF üretimi)
