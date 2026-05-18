@@ -1,5 +1,12 @@
 # Sofranet - Proje Raporu
 
+## Teslim Bilgileri
+
+- **GitHub repository:** https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/main
+- **Unlisted YouTube demo video:** https://www.youtube.com/watch?v=3bMTYeQ9GcA
+- **Ayrı link dosyası:** `LINKS.txt`
+- **Database generation scripts:** `db/init.sql`, `db/README.md`, `Migrations/`, `Data/SeedData.cs`
+
 **Ders:** CENG 382 - Web Programming
 **Dönem:** 2025-2026 Bahar
 **Öğrenci:** Yusuf Şimşek (202138008)
@@ -10,7 +17,7 @@
 
 ## 1. Proje Tanımı
 
-Sofranet, kullanıcıların yakınlarındaki yerel restoranlardan yemek sipariş edebildiği, restoran sahiplerinin (caterer) kendi menülerini yönetebildiği ve sistem yöneticilerinin platformu denetleyebildiği bir full-stack catering platformudur. Proje, ders kapsamında istenen tüm fonksiyonel gereksinimleri ve bonus 2FA kalemini karşılayacak şekilde tasarlanmış, ASP.NET Core 8 MVC mimarisi üzerine kurulmuştur.
+Sofranet, kullanıcıların yakınlarındaki yerel restoranlardan yemek sipariş edebildiği, restoran sahiplerinin (caterer) kendi menülerini yönetebildiği ve sistem yöneticilerinin platformu denetleyebildiği bir full-stack catering platformudur. Proje, ders kapsamında istenen tüm fonksiyonel gereksinimleri ve bonus 2FA kalemini karşılayacak şekilde tasarlanmış, ASP.NET Core 10 MVC mimarisi üzerine kurulmuştur.
 
 Platform üç farklı kullanıcı rolünü destekler:
 
@@ -49,9 +56,9 @@ View (Razor render) → HTTP Response
 
 ## 3. Teknoloji Stack'i
 
-- **.NET 8** - LTS sürüm
-- **ASP.NET Core 8 MVC** - web framework
-- **Entity Framework Core 8** - ORM, Code-First migration ile
+- **.NET 10** - web application runtime
+- **ASP.NET Core 10 MVC** - web framework
+- **Entity Framework Core 10** - ORM, Code-First migration ile
 - **ASP.NET Core Identity** - kullanıcı yönetimi, rol bazlı yetkilendirme, 2FA
 - **SQLite** - başlangıçta PostgreSQL planlanmıştı, geliştirme makinesinde PostgreSQL kurulu olmadığı için SQLite'a geçildi (provider değişimi tek bir Program.cs satırı). Production'da connection string ile Postgres'e dönülebilir.
 - **MailKit** - SMTP üzerinden e-posta gönderimi (sipariş bildirimi, 2FA kodu)
@@ -220,7 +227,33 @@ Test stratejisi: her commit sonrası temel smoke test (login, kritik action'lar)
 - SignalR ile gerçek zamanlı sipariş bildirimi yok (caterer panelinin polling yapması gerekiyor).
 - Frontend i18n yok — hardcoded Türkçe.
 
-## 12. Sonuç
+## 12. Teslim Paket İçeriği
+
+Bu proje tesliminde aşağıdaki dosya ve kaynaklar kullanılacaktır:
+
+- `RAPOR.md` / `RAPOR.pdf`: Proje raporu
+- `README.md`: Kurulum, test akışı ve proje özeti
+- `LINKS.txt`: GitHub repository ve unlisted YouTube demo video linkleri
+- `db/init.sql`: SQLite veritabanı oluşturma ve seed script'i
+- `db/README.md`: Veritabanı oluşturma adımları
+- `Migrations/`: EF Core Code-First migration dosyaları
+- `Data/SeedData.cs`: Rol, kullanıcı ve menü seed verisi
+
+GitHub repository linki ve YouTube demo video linki hem bu raporda hem de ayrı `LINKS.txt` dosyasında ayrıca belirtilmiştir.
+
+## 13. Referanslar ve Kullanılan Kaynaklar
+
+- Microsoft ASP.NET Core MVC documentation: https://learn.microsoft.com/aspnet/core/mvc/
+- Microsoft Entity Framework Core documentation: https://learn.microsoft.com/ef/core/
+- Microsoft ASP.NET Core Identity documentation: https://learn.microsoft.com/aspnet/core/security/authentication/identity
+- Bootstrap 5 documentation: https://getbootstrap.com/docs/5.0/
+- MailKit / MimeKit documentation: https://mimekit.net/docs/html/Introduction.htm
+- QuestPDF documentation: https://www.questpdf.com/documentation/
+- Google Maps Platform documentation: https://developers.google.com/maps/documentation
+- SQLite documentation: https://www.sqlite.org/docs.html
+- Microsoft Learn and official package documentation were used as the primary references during development.
+
+## 14. Sonuç
 
 Sofranet, ders rubric'inde istenen tüm zorunlu kalemleri ve bonus 2FA özelliğini karşılayan, çalışan bir MVC uygulaması olarak teslim edildi. Temel akışlar (kayıt, login, menü browse, sipariş, ödeme simülasyonu, PDF üretimi, rating, admin denetimi) uçtan uca test edildi. SQLite'ın bazı sınırları (decimal aggregate desteklememesi) ve MVC reserved route parameter tuzağı gibi geliştirme sırasında karşılaşılan teknik problemler çözüldü.
 

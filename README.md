@@ -1,13 +1,25 @@
 # Sofranet
 
+## Teslim Linkleri
+
+- GitHub repository: https://github.com/yusufsimmsek/Ceng_382_25-26_202138008/tree/main
+- Unlisted YouTube demo video: https://www.youtube.com/watch?v=3bMTYeQ9GcA
+
+## Teslim Dosyaları
+
+- Written project report: `RAPOR.md` / `RAPOR.pdf`
+- Separate link file: `LINKS.txt`
+- Database initialization scripts: `db/init.sql` and `db/README.md`
+- Source code and reproducible setup: this repository
+
 CENG 382 dönem projesi - Mahallendeki lezzet kapına gelsin.
 
-ASP.NET Core 8 MVC + EF Core + Identity ile yazılmış bir catering platformu. User / Caterer / Admin rolleri, menü customization, sepet, sipariş, email + PDF üretimi, Google Maps entegrasyonu, rating sistemi ve email-tabanlı 2FA içeriyor.
+ASP.NET Core 10 MVC + EF Core + Identity ile yazılmış bir catering platformu. User / Caterer / Admin rolleri, menü customization, sepet, sipariş, email + PDF üretimi, Google Maps entegrasyonu, rating sistemi ve email-tabanlı 2FA içeriyor.
 
 ## Tech Stack
 
-- ASP.NET Core 8 MVC
-- Entity Framework Core 8 (SQLite, opsiyonel PostgreSQL)
+- ASP.NET Core 10 MVC
+- Entity Framework Core 10 (SQLite, opsiyonel PostgreSQL)
 - ASP.NET Core Identity (auth, roller, 2FA)
 - MailKit (SMTP)
 - QuestPDF (PDF üretimi)
@@ -18,7 +30,7 @@ ASP.NET Core 8 MVC + EF Core + Identity ile yazılmış bir catering platformu. 
 
 Gereken:
 
-- .NET 8 SDK
+- .NET 10 SDK
 - (Opsiyonel) SMTP credential'ları, Google Maps API key
 
 ```bash
@@ -108,6 +120,16 @@ Sofranet/
 ├── wwwroot/          # Static assets
 └── Program.cs        # Entry point + DI + middleware
 ```
+
+## References
+
+- Microsoft ASP.NET Core MVC documentation: https://learn.microsoft.com/aspnet/core/mvc/
+- Microsoft Entity Framework Core documentation: https://learn.microsoft.com/ef/core/
+- Microsoft ASP.NET Core Identity documentation: https://learn.microsoft.com/aspnet/core/security/authentication/identity
+- Bootstrap 5 documentation: https://getbootstrap.com/docs/5.0/
+- MailKit documentation: https://mimekit.net/docs/html/Introduction.htm
+- QuestPDF documentation: https://www.questpdf.com/documentation/
+- Google Maps Platform documentation: https://developers.google.com/maps/documentation
 
 ## Lisans / Notlar
 
