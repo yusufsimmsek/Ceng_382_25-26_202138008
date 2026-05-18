@@ -112,17 +112,17 @@ CREATE TABLE IF NOT EXISTS "MenuItems" (
     "UpdatedAt" TEXT NOT NULL,
     CONSTRAINT "FK_MenuItems_AspNetUsers_CatererId" FOREIGN KEY ("CatererId") REFERENCES "AspNetUsers" ("Id") ON DELETE RESTRICT
 );
-INSERT INTO MenuItems VALUES(1,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Lahmacun',60,'İnce hamur üzerinde özel kıymalı harç, taş fırında.','/images/no-image.svg',1,'2026-05-18 08:44:08.030106','2026-05-18 08:44:08.030106');
-INSERT INTO MenuItems VALUES(2,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Adana Dürüm',180,'Acılı kıyma kebabı, lavaşta sarılmış.','/images/no-image.svg',1,'2026-05-18 08:44:08.030275','2026-05-18 08:44:08.030275');
-INSERT INTO MenuItems VALUES(3,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Künefe',130,'Tel kadayıf arasında peynir, üzerine şerbet ve fıstık.','/images/no-image.svg',1,'2026-05-18 08:44:08.030276','2026-05-18 08:44:08.030276');
-INSERT INTO MenuItems VALUES(4,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Kıymalı Pide',140,'El açması hamur, taze kıyma, biber, taş fırın.','/images/no-image.svg',1,'2026-05-18 08:44:08.030277','2026-05-18 08:44:08.030277');
-INSERT INTO MenuItems VALUES(5,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Kuru Fasulye',120,'Etli kuru fasulye, salça ve tereyağı ile.','/images/no-image.svg',1,'2026-05-18 08:44:08.04822','2026-05-18 08:44:08.04822');
-INSERT INTO MenuItems VALUES(6,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Mantı',150,'El açması mantı, yoğurt ve tereyağlı sos.','/images/no-image.svg',1,'2026-05-18 08:44:08.048221','2026-05-18 08:44:08.048221');
-INSERT INTO MenuItems VALUES(7,'eb8de06e-6933-4da2-8fdd-4044db7f1324','İçli Köfte (4 adet)',110,'Bulgur ve iç harç, kızartma.','/images/no-image.svg',1,'2026-05-18 08:44:08.048222','2026-05-18 08:44:08.048222');
-INSERT INTO MenuItems VALUES(8,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Fırın Sütlaç',70,'Geleneksel fırın sütlaç, üzeri karamelize.','/images/no-image.svg',1,'2026-05-18 08:44:08.048222','2026-05-18 08:44:08.048222');
-INSERT INTO MenuItems VALUES(9,'ab8bdfea-a469-4382-b521-8fe689670655','Tavuk Döner Porsiyon',170,'Pilav üstü tavuk döner, közlenmiş biber.','/images/no-image.svg',1,'2026-05-18 08:44:08.04834','2026-05-18 08:44:08.04834');
-INSERT INTO MenuItems VALUES(10,'ab8bdfea-a469-4382-b521-8fe689670655','İskender',220,'Pide üzerinde döner, tereyağı, domates sos, yoğurt.','/images/no-image.svg',1,'2026-05-18 08:44:08.048341','2026-05-18 08:44:08.048341');
-INSERT INTO MenuItems VALUES(11,'ab8bdfea-a469-4382-b521-8fe689670655','Beyti',200,'Sarma kebap, yoğurt ve domates sos.','/images/no-image.svg',1,'2026-05-18 08:44:08.048341','2026-05-18 08:44:08.048341');
+INSERT INTO MenuItems VALUES(1,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Lahmacun',60,'İnce hamur üzerinde özel kıymalı harç, taş fırında.','/images/menu/lahmacun.jpg',1,'2026-05-18 08:44:08.030106','2026-05-18 08:44:08.030106');
+INSERT INTO MenuItems VALUES(2,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Adana Dürüm',180,'Acılı kıyma kebabı, lavaşta sarılmış.','/images/menu/adana-durum.jpg',1,'2026-05-18 08:44:08.030275','2026-05-18 08:44:08.030275');
+INSERT INTO MenuItems VALUES(3,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Künefe',130,'Tel kadayıf arasında peynir, üzerine şerbet ve fıstık.','/images/menu/kunefe.jpg',1,'2026-05-18 08:44:08.030276','2026-05-18 08:44:08.030276');
+INSERT INTO MenuItems VALUES(4,'6e1b4258-f782-4451-b25f-f559cfc4d8b3','Kıymalı Pide',140,'El açması hamur, taze kıyma, biber, taş fırın.','/images/menu/kiymali-pide.jpg',1,'2026-05-18 08:44:08.030277','2026-05-18 08:44:08.030277');
+INSERT INTO MenuItems VALUES(5,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Kuru Fasulye',120,'Etli kuru fasulye, salça ve tereyağı ile.','/images/menu/kuru-fasulye.jpg',1,'2026-05-18 08:44:08.04822','2026-05-18 08:44:08.04822');
+INSERT INTO MenuItems VALUES(6,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Mantı',150,'El açması mantı, yoğurt ve tereyağlı sos.','/images/menu/manti.jpg',1,'2026-05-18 08:44:08.048221','2026-05-18 08:44:08.048221');
+INSERT INTO MenuItems VALUES(7,'eb8de06e-6933-4da2-8fdd-4044db7f1324','İçli Köfte (4 adet)',110,'Bulgur ve iç harç, kızartma.','/images/menu/icli-kofte.jpg',1,'2026-05-18 08:44:08.048222','2026-05-18 08:44:08.048222');
+INSERT INTO MenuItems VALUES(8,'eb8de06e-6933-4da2-8fdd-4044db7f1324','Fırın Sütlaç',70,'Geleneksel fırın sütlaç, üzeri karamelize.','/images/menu/firin-sutlac.jpg',1,'2026-05-18 08:44:08.048222','2026-05-18 08:44:08.048222');
+INSERT INTO MenuItems VALUES(9,'ab8bdfea-a469-4382-b521-8fe689670655','Tavuk Döner Porsiyon',170,'Pilav üstü tavuk döner, közlenmiş biber.','/images/menu/tavuk-doner.jpg',1,'2026-05-18 08:44:08.04834','2026-05-18 08:44:08.04834');
+INSERT INTO MenuItems VALUES(10,'ab8bdfea-a469-4382-b521-8fe689670655','İskender',220,'Pide üzerinde döner, tereyağı, domates sos, yoğurt.','/images/menu/iskender.jpg',1,'2026-05-18 08:44:08.048341','2026-05-18 08:44:08.048341');
+INSERT INTO MenuItems VALUES(11,'ab8bdfea-a469-4382-b521-8fe689670655','Beyti',200,'Sarma kebap, yoğurt ve domates sos.','/images/menu/beyti.jpg',1,'2026-05-18 08:44:08.048341','2026-05-18 08:44:08.048341');
 CREATE TABLE IF NOT EXISTS "Orders" (
     "Id" INTEGER NOT NULL CONSTRAINT "PK_Orders" PRIMARY KEY AUTOINCREMENT,
     "UserId" TEXT NOT NULL,

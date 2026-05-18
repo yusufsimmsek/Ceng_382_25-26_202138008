@@ -2,40 +2,112 @@
     ViewData["Title"] = "Anasayfa";
 }
 
-<div class="hero text-center">
-    <div class="container">
-        <h1 class="hero-title">🍽️ Sofranet</h1>
-        <p class="hero-tagline">Mahallendeki lezzet kapına gelsin</p>
-        <p class="lead text-muted mb-4">
-            Çevrendeki yerel restoranlardan online sipariş ver, en sevdiklerini keşfet.
+<section class="home-hero">
+    <div class="home-hero-content">
+        <span class="home-kicker">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 21s7-4.6 7-11a7 7 0 1 0-14 0c0 6.4 7 11 7 11Z" />
+                <circle cx="12" cy="10" r="2.5" />
+            </svg>
+            Mahallendeki lezzet kapına gelsin
+        </span>
+        <h1 class="hero-title">Sofranet</h1>
+        <p class="home-hero-text">
+            Yerel restoranları keşfet, favori yemeğini özelleştir ve siparişini birkaç adımda tamamla.
         </p>
-        <div class="mt-4">
-            <a asp-controller="Menu" asp-action="Index" class="btn-cta">Menülere Göz At</a>
-            <a asp-controller="Account" asp-action="Register" class="btn-cta-outline ms-2">Hemen Üye Ol</a>
+        <div class="home-hero-actions">
+            <a asp-controller="Menu" asp-action="Index" class="btn-cta">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16M4 12h16M4 18h10" />
+                </svg>
+                Menülere Göz At
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn-cta-outline">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                Hemen Üye Ol
+            </a>
+        </div>
+        <div class="home-hero-stats" aria-label="Sofranet öne çıkanlar">
+            <div>
+                <strong>3</strong>
+                <span>rol</span>
+            </div>
+            <div>
+                <strong>11</strong>
+                <span>menü</span>
+            </div>
+            <div>
+                <strong>2FA</strong>
+                <span>güvenlik</span>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="feature-card">
-            <div class="feature-icon">📍</div>
-            <div class="feature-title">Yakındaki Restoranlar</div>
-            <p class="feature-text">Konumuna göre en yakın yerel mutfakları keşfet.</p>
+<section class="home-section">
+    <div class="section-heading">
+        <span class="section-kicker">Platform akışı</span>
+        <h2>Menüden siparişe kadar temiz, hızlı ve takip edilebilir.</h2>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="feature-card home-feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 21s7-4.6 7-11a7 7 0 1 0-14 0c0 6.4 7 11 7 11Z" />
+                        <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                </div>
+                <div class="feature-title">Yakındaki Restoranlar</div>
+                <p class="feature-text">Konuma göre restoranları listele, mesafe filtresiyle daha hızlı karar ver.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card home-feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6h15l-2 8H8L6 6Z" />
+                        <path d="M6 6 5 3H2" />
+                        <circle cx="9" cy="20" r="1.5" />
+                        <circle cx="18" cy="20" r="1.5" />
+                    </svg>
+                </div>
+                <div class="feature-title">Akıllı Sepet</div>
+                <p class="feature-text">Ürün seçenekleri, ekstra fiyatlar ve tek restoran kontrolü aynı akışta tutulur.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card home-feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                </div>
+                <div class="feature-title">Takip Edilebilir Sipariş</div>
+                <p class="feature-text">Ödeme simülasyonu, PDF belgeleri, rating ve log kayıtları uçtan uca bağlıdır.</p>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="feature-card">
-            <div class="feature-icon">🛒</div>
-            <div class="feature-title">Kolay Sipariş</div>
-            <p class="feature-text">Customize et, sepete ekle, dakikalar içinde siparişini tamamla.</p>
-        </div>
+
+    <div class="home-showcase">
+        <a asp-controller="Menu" asp-action="Detail" asp-route-id="2" class="showcase-tile showcase-large">
+            <img src="~/images/menu/adana-durum.jpg" alt="Adana Dürüm" />
+            <span>Adana Dürüm</span>
+        </a>
+        <a asp-controller="Menu" asp-action="Detail" asp-route-id="6" class="showcase-tile">
+            <img src="~/images/menu/manti.jpg" alt="Mantı" />
+            <span>Mantı</span>
+        </a>
+        <a asp-controller="Menu" asp-action="Detail" asp-route-id="10" class="showcase-tile">
+            <img src="~/images/menu/iskender.jpg" alt="İskender" />
+            <span>İskender</span>
+        </a>
+        <a asp-controller="Menu" asp-action="Detail" asp-route-id="3" class="showcase-tile">
+            <img src="~/images/menu/kunefe.jpg" alt="Künefe" />
+            <span>Künefe</span>
+        </a>
     </div>
-    <div class="col-md-4">
-        <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-title">Hızlı Teslimat</div>
-            <p class="feature-text">Yerel restoranlardan taze ve sıcak yemek hızla kapına gelsin.</p>
-        </div>
-    </div>
-</div>
+</section>

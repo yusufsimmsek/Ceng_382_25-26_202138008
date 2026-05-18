@@ -116,7 +116,7 @@ public static class SeedData
             Name = "Lahmacun",
             Description = "İnce hamur üzerinde özel kıymalı harç, taş fırında.",
             Price = 60m,
-            ImagePath = "/images/no-image.svg",
+            ImagePath = "/images/menu/lahmacun.jpg",
             IsAvailable = true
         };
         lahmacun.OptionGroups.Add(new OptionGroup
@@ -142,7 +142,7 @@ public static class SeedData
             Name = "Adana Dürüm",
             Description = "Acılı kıyma kebabı, lavaşta sarılmış.",
             Price = 180m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/adana-durum.jpg"
         };
         adana.OptionGroups.Add(new OptionGroup
         {
@@ -178,7 +178,7 @@ public static class SeedData
             Name = "Künefe",
             Description = "Tel kadayıf arasında peynir, üzerine şerbet ve fıstık.",
             Price = 130m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/kunefe.jpg"
         };
         kunefe.OptionGroups.Add(new OptionGroup
         {
@@ -199,7 +199,7 @@ public static class SeedData
             Name = "Kıymalı Pide",
             Description = "El açması hamur, taze kıyma, biber, taş fırın.",
             Price = 140m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/kiymali-pide.jpg"
         };
         pide.RemovableIngredients.Add(new RemovableIngredient { Name = "Biber" });
         pide.RemovableIngredients.Add(new RemovableIngredient { Name = "Soğan" });
@@ -213,7 +213,7 @@ public static class SeedData
             Name = "Kuru Fasulye",
             Description = "Etli kuru fasulye, salça ve tereyağı ile.",
             Price = 120m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/kuru-fasulye.jpg"
         };
         kuru.OptionGroups.Add(new OptionGroup
         {
@@ -235,7 +235,7 @@ public static class SeedData
             Name = "Mantı",
             Description = "El açması mantı, yoğurt ve tereyağlı sos.",
             Price = 150m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/manti.jpg"
         };
         mantili.RemovableIngredients.Add(new RemovableIngredient { Name = "Sarımsak" });
         mantili.RemovableIngredients.Add(new RemovableIngredient { Name = "Nane" });
@@ -246,7 +246,7 @@ public static class SeedData
             Name = "İçli Köfte (4 adet)",
             Description = "Bulgur ve iç harç, kızartma.",
             Price = 110m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/icli-kofte.jpg"
         };
 
         var sutlac = new MenuItem
@@ -255,7 +255,7 @@ public static class SeedData
             Name = "Fırın Sütlaç",
             Description = "Geleneksel fırın sütlaç, üzeri karamelize.",
             Price = 70m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/firin-sutlac.jpg"
         };
 
         db.MenuItems.AddRange(kuru, mantili, icliKofte, sutlac);
@@ -267,7 +267,7 @@ public static class SeedData
             Name = "Tavuk Döner Porsiyon",
             Description = "Pilav üstü tavuk döner, közlenmiş biber.",
             Price = 170m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/tavuk-doner.jpg"
         };
         doner.OptionGroups.Add(new OptionGroup
         {
@@ -289,7 +289,7 @@ public static class SeedData
             Name = "İskender",
             Description = "Pide üzerinde döner, tereyağı, domates sos, yoğurt.",
             Price = 220m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/iskender.jpg"
         };
         iskender.OptionGroups.Add(new OptionGroup
         {
@@ -310,7 +310,7 @@ public static class SeedData
             Name = "Beyti",
             Description = "Sarma kebap, yoğurt ve domates sos.",
             Price = 200m,
-            ImagePath = "/images/no-image.svg"
+            ImagePath = "/images/menu/beyti.jpg"
         };
         beyti.RemovableIngredients.Add(new RemovableIngredient { Name = "Sarımsak" });
 

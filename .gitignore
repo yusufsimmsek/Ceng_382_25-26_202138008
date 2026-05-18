@@ -18,6 +18,8 @@ x86/
 
 ## ASP.NET Core / development settings
 appsettings.Development.json
+.aspnet-data-protection-keys/
+.aspnet-localappdata/
 *.pidb
 *.svclog
 *.scc
